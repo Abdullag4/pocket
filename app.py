@@ -4,6 +4,11 @@ import os
 from Expense import show_add_expense
 from Income import show_add_income
 from Setting import show_settings
+from style import apply_styles
+from sidebar import show_sidebar
+
+# Apply custom styles
+apply_styles()
 
 # App title
 st.title("Monthly Finance Manager")
@@ -17,9 +22,8 @@ if os.path.exists(db_file):
 else:
     finance_data = pd.DataFrame(columns=["Date", "Type", "Category", "Amount", "Notes"])
 
-# Sidebar navigation
-st.sidebar.title("Navigation")
-menu = st.sidebar.radio("Menu", ["Overview", "Add Expense", "Add Income", "Settings"])
+# Show the sidebar and get the selected menu
+menu = show_sidebar()
 
 # Overview Page
 if menu == "Overview":
