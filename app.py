@@ -69,4 +69,3 @@ elif menu == "Add Income":
 # Settings Page
 elif menu == "Settings":
     show_settings(finance_data, db_file)
-
