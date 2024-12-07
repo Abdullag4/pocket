@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
 import os
-import matplotlib.pyplot as plt
+from Expense import show_add_expense
+from Income import show_add_income
+from Setting import show_settings
 
 # App title
 st.title("Monthly Finance Manager")
@@ -15,7 +17,7 @@ if os.path.exists(db_file):
 else:
     finance_data = pd.DataFrame(columns=["Date", "Type", "Category", "Amount", "Notes"])
 
-# Sidebar
+# Sidebar navigation
 st.sidebar.title("Navigation")
 menu = st.sidebar.radio("Menu", ["Overview", "Add Expense", "Add Income", "Settings"])
 
@@ -38,7 +40,7 @@ if menu == "Overview":
         st.write(f"**Balance:** ${balance:,.2f}")
 
         # Visualization: Pie chart for income vs. expenses
-        st.subheader("Financial Breakdown")
+        import matplotlib.pyplot as plt
         fig, ax = plt.subplots()
         labels = ['Income', 'Expenses']
         sizes = [total_income, abs(total_expenses)]
@@ -54,53 +56,12 @@ if menu == "Overview":
 
 # Add Expense Page
 elif menu == "Add Expense":
-    st.header("Add Expense")
-    with st.form("expense_form"):
-        date = st.date_input("Date")
-        category = st.selectbox("Category", ["Food", "Clothes", "Electric"])
-        amount = st.number_input("Amount", min_value=0.0, step=0.01)
-        notes = st.text_area("Notes (optional)")
-        submitted = st.form_submit_button("Add Expense")
-
-    if submitted:
-        new_data = {
-            "Date": date.strftime("%Y-%m-%d"),
-            "Type": "Expense",
-            "Category": category,
-            "Amount": -amount,
-            "Notes": notes
-        }
-        finance_data = finance_data.append(new_data, ignore_index=True)
-        finance_data.to_csv(db_file, index=False)  # Save to CSV
-        st.success("Expense added successfully!")
+    show_add_expense(finance_data, db_file)
 
 # Add Income Page
 elif menu == "Add Income":
-    st.header("Add Income")
-    with st.form("income_form"):
-        date = st.date_input("Date")
-        category = st.selectbox("Category", ["Salary", "Investment"])
-        amount = st.number_input("Amount", min_value=0.0, step=0.01)
-        notes = st.text_area("Notes (optional)")
-        submitted = st.form_submit_button("Add Income")
-
-    if submitted:
-        new_data = {
-            "Date": date.strftime("%Y-%m-%d"),
-            "Type": "Income",
-            "Category": category,
-            "Amount": amount,
-            "Notes": notes
-        }
-        finance_data = finance_data.append(new_data, ignore_index=True)
-        finance_data.to_csv(db_file, index=False)  # Save to CSV
-        st.success("Income added successfully!")
+    show_add_income(finance_data, db_file)
 
 # Settings Page
 elif menu == "Settings":
-    st.header("Settings")
-    clear = st.button("Clear All Data")
-    if clear:
-        finance_data = pd.DataFrame(columns=["Date", "Type", "Category", "Amount", "Notes"])
-        finance_data.to_csv(db_file, index=False)  # Save the cleared data to CSV
-        st.success("All data cleared!")
+    show_settings(finance_data, db_file)
