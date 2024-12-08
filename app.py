@@ -41,9 +41,9 @@ if menu == "Overview":
     st.title("Overview")
     st.dataframe(finance_data.style.highlight_max(axis=0))
 elif menu == "Add Expense":
-    show_add_expense(finance_data, db_file)
+    show_add_expense(finance_data, save_data)
 elif menu == "Add Income":
-    show_add_income(finance_data, db_file)
+    show_add_income(finance_data, save_data)
 elif menu == "Settings":
     show_settings()
 
