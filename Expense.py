@@ -21,3 +21,4 @@ def show_add_expense(finance_data, save_data):
             finance_data = pd.concat([finance_data, pd.DataFrame([new_data])], ignore_index=True)
             save_data(finance_data)
             st.success("Expense added successfully!")
+
