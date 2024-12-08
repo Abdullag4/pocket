@@ -1,71 +1,68 @@
 import streamlit as st
-import pandas as pd
-import os
+from github import Github
+from sidebar import show_sidebar
+from style import apply_styles
 from Expense import show_add_expense
 from Income import show_add_income
 from Setting import show_settings
-from style import apply_styles
-from sidebar import show_sidebar
+import pandas as pd
 
-# Apply custom styles
+# Apply Styles
 apply_styles()
 
-# App title
-st.title("Monthly Finance Manager")
+# Load GitHub Token from Secrets
+GITHUB_TOKEN = st.secrets["GITHUB_POCKET"]
 
-# File path for the database CSV
-db_file = "database.csv"
+# Initialize GitHub API client
+g = Github(GITHUB_TOKEN)
 
-# Load data from CSV if it exists; otherwise, create an empty DataFrame
-if os.path.exists(db_file):
-    finance_data = pd.read_csv(db_file)
-else:
-    finance_data = pd.DataFrame(columns=["Date", "Type", "Category", "Amount", "Notes"])
+# Your repository where the CSV is stored (update with your actual repository details)
+REPO_NAME = "your-username/your-repo"
+CSV_PATH = "database.csv"
 
-# Show the sidebar and get the selected menu
+# Load finance data from GitHub
+@st.cache_data
+def load_data():
+    repo = g.get_repo(REPO_NAME)
+    file_content = repo.get_contents(CSV_PATH)
+    data = pd.read_csv(file_content.download_url)
+    return data
+
+# Save finance data back to GitHub
+def save_data(data):
+    repo = g.get_repo(REPO_NAME)
+    file_content = repo.get_contents(CSV_PATH)
+    updated_content = data.to_csv(index=False)
+    repo.update_file(
+        path=CSV_PATH,
+        message="Update finance data",
+        content=updated_content,
+        sha=file_content.sha,
+    )
+
+# Load initial data
+try:
+    finance_data = load_data()
+except Exception as e:
+    st.error("Failed to load data from GitHub. Please check your configuration.")
+    st.stop()
+
+# Sidebar
 menu = show_sidebar()
 
 # Overview Page
 if menu == "Overview":
-    st.header("Financial Overview")
-    
-    if not finance_data.empty:
-        st.subheader("Transaction History")
-        st.dataframe(finance_data.style.highlight_max(axis=0))
-
-        # Generate summary for income and expenses
-        st.subheader("Summary")
-        total_income = finance_data[finance_data["Type"] == "Income"]["Amount"].sum()
-        total_expenses = finance_data[finance_data["Type"] == "Expense"]["Amount"].sum()
-        balance = total_income + total_expenses
-
-        st.write(f"**Total Income:** ${total_income:,.2f}")
-        st.write(f"**Total Expenses:** ${abs(total_expenses):,.2f}")
-        st.write(f"**Balance:** ${balance:,.2f}")
-
-        # Visualization: Pie chart for income vs. expenses
-        import matplotlib.pyplot as plt
-        fig, ax = plt.subplots()
-        labels = ['Income', 'Expenses']
-        sizes = [total_income, abs(total_expenses)]
-        colors = ['lightgreen', 'lightcoral']
-        explode = (0.1, 0.1)
-        
-        ax.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', shadow=True, startangle=140)
-        ax.axis('equal')
-        st.pyplot(fig)
-        
-    else:
-        st.info("No transactions available yet. Use the menu to add income or expenses.")
+    st.title("Finance Overview")
+    st.dataframe(finance_data)
 
 # Add Expense Page
 elif menu == "Add Expense":
-    show_add_expense(finance_data, db_file)
+    show_add_expense(finance_data, save_data)
 
 # Add Income Page
 elif menu == "Add Income":
-    show_add_income(finance_data, db_file)
+    show_add_income(finance_data, save_data)
 
 # Settings Page
 elif menu == "Settings":
-    show_settings(finance_data, db_file)
+    show_settings()
