@@ -9,7 +9,10 @@ from Setting import show_settings
 def load_finance_data(file_path):
     """Load finance data from a CSV file."""
     try:
-        return pd.read_csv(file_path)
+        data = pd.read_csv(file_path)
+        # Ensure 'Amount' is numeric, coercing errors to NaN
+        data['Amount'] = pd.to_numeric(data['Amount'], errors='coerce')
+        return data
     except FileNotFoundError:
         # If file does not exist, create an empty DataFrame
         return pd.DataFrame(columns=["Date", "Category", "Amount", "Notes"])
