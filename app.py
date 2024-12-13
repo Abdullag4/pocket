@@ -30,19 +30,23 @@ menu = show_sidebar()
 # Debugging: Display the selected menu
 st.write(f"Debug: Selected menu - {menu}")
 
-# Page Routing
-if menu == "Overview":
-    st.title("Overview")
-    st.dataframe(finance_data.style.highlight_max(axis=0), use_container_width=True)
-elif menu == "Add Expense":
-    st.write("Navigating to Add Expense")
-    show_add_expense(finance_data, lambda data: save_finance_data(data, db_file))
-elif menu == "Add Income":
-    st.write("Navigating to Add Income")
-    show_add_income(finance_data, lambda data: save_finance_data(data, db_file))
-elif menu == "Settings":
-    st.write("Navigating to Settings")
-    show_settings(finance_data, db_file)
+# Page Routing with Debugging
+try:
+    if menu == "Overview":
+        st.title("Overview")
+        st.dataframe(finance_data.style.highlight_max(axis=0), use_container_width=True)
+    elif menu == "Add Expense":
+        st.write("Navigating to Add Expense")
+        show_add_expense(finance_data, lambda data: save_finance_data(data, db_file))
+    elif menu == "Add Income":
+        st.write("Navigating to Add Income")
+        show_add_income(finance_data, lambda data: save_finance_data(data, db_file))
+    elif menu == "Settings":
+        st.write("Navigating to Settings")
+        show_settings(finance_data, db_file)
+except Exception as e:
+    st.error("An error occurred while rendering the page.")
+    st.write(f"Error details: {e}")
 
 # Footer Debugging
 st.write("App execution completed.")
