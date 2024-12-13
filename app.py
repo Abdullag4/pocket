@@ -1,58 +1,48 @@
-# Import necessary modules
 import streamlit as st
-from github import Github
+import pandas as pd
 from sidebar import show_sidebar
-from style import apply_styles
 from Expense import show_add_expense
 from Income import show_add_income
 from Setting import show_settings
-import pandas as pd
-
-# Apply custom styles
-apply_styles()
-
-# Authenticate with GitHub using token from Streamlit secrets
-def authenticate_github():
-    try:
-        token = st.secrets["GITHUB_POCKET"]
-        github_client = Github(token)
-        user = github_client.get_user()
-        st.sidebar.success(f"GitHub Authenticated as: {user.login}")
-        return github_client
-    except Exception as e:
-        st.sidebar.error("Failed to authenticate with GitHub.")
-        st.sidebar.write(e)
-        return None
 
 # Load Finance Data
+def load_finance_data(file_path):
+    """Load finance data from a CSV file."""
+    try:
+        return pd.read_csv(file_path)
+    except FileNotFoundError:
+        # If file does not exist, create an empty DataFrame
+        return pd.DataFrame(columns=["Date", "Category", "Amount", "Notes"])
+
+def save_finance_data(data, file_path):
+    """Save finance data to a CSV file."""
+    data.to_csv(file_path, index=False)
+
+# File path for the database
 db_file = "database.csv"
-try:
-    finance_data = pd.read_csv(db_file)
-except FileNotFoundError:
-    finance_data = pd.DataFrame(columns=["Date", "Category", "Amount", "Notes"])
 
-# Display sidebar and select menu
-menu = show_sidebar()  # Ensure menu is defined here
+# Load or initialize finance data
+finance_data = load_finance_data(db_file)
 
-# GitHub Authentication
-github_client = authenticate_github()
+# Sidebar Menu
+menu = show_sidebar()
+
+# Debugging: Display the selected menu
+st.write(f"Debug: Selected menu - {menu}")
 
 # Page Routing
 if menu == "Overview":
     st.title("Overview")
-    st.dataframe(finance_data.style.highlight_max(axis=0))
+    st.dataframe(finance_data.style.highlight_max(axis=0), use_container_width=True)
 elif menu == "Add Expense":
-    def save_data(data):
-        """Saves the finance data to the database file."""
-        data.to_csv(db_file, index=False)
-
-    show_add_expense(finance_data, save_data)  # Pass save_data function
+    st.write("Navigating to Add Expense")
+    show_add_expense(finance_data, lambda data: save_finance_data(data, db_file))
 elif menu == "Add Income":
-    def save_data(data):
-        """Saves the finance data to the database file."""
-        data.to_csv(db_file, index=False)
-
-    show_add_income(finance_data, save_data)  # Pass save_data function
+    st.write("Navigating to Add Income")
+    show_add_income(finance_data, lambda data: save_finance_data(data, db_file))
 elif menu == "Settings":
+    st.write("Navigating to Settings")
     show_settings(finance_data, db_file)
 
+# Footer Debugging
+st.write("App execution completed.")
