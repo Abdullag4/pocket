@@ -56,14 +56,3 @@ elif menu == "Add Income":
 elif menu == "Settings":
     show_settings(finance_data, db_file)
 
-menu = show_sidebar()
-
-if menu == "Overview":
-    st.title("Overview")
-elif menu == "Add Expense":
-    show_add_expense(finance_data, db_file)
-elif menu == "Add Income":
-    show_add_income(finance_data, db_file)
-elif menu == "Settings":
-    show_settings()
-
