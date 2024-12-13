@@ -1,21 +1,28 @@
 import streamlit as st
 
 def show_sidebar():
-    # Sidebar navigation using a selectbox to persist the state
-    st.sidebar.title("Navigation")
-    
-    # Set default value for the menu if not already set
-    if "menu" not in st.session_state:
-        st.session_state.menu = "Overview"
+    """
+    Creates a sidebar navigation menu and manages its state.
 
-    # Sidebar selectbox to choose the menu
+    Returns:
+        str: The selected menu option.
+    """
+    # Set the title for the sidebar
+    st.sidebar.title("Navigation")
+
+    # Ensure session state for the menu persists
+    if "menu" not in st.session_state:
+        st.session_state.menu = "Overview"  # Default option
+
+    # Sidebar selectbox to navigate between options
     menu = st.sidebar.selectbox(
         "Choose an option",
         ["Overview", "Add Expense", "Add Income", "Settings"],
         index=["Overview", "Add Expense", "Add Income", "Settings"].index(st.session_state.menu)
     )
-    
-    # Update the session state when an option is selected
+
+    # Update the session state to reflect the current selection
     st.session_state.menu = menu
 
+    # Return the selected menu option
     return menu
