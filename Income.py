@@ -13,12 +13,12 @@ def show_add_income(finance_data, save_data):
 
         if submit:
             try:
-                new_data = {
-                    "Date": date,
-                    "Category": category,
-                    "Amount": amount,
-                    "Notes": notes,
-                }
+               new_data = {
+    "Date": str(date),  # Convert date to string for consistency
+    "Category": category,
+    "Amount": float(amount),  # Ensure Amount is a float
+    "Notes": notes,
+}
                 finance_data = pd.concat([finance_data, pd.DataFrame([new_data])], ignore_index=True)
                 save_data(finance_data)
                 st.success("Income added successfully!")
