@@ -55,8 +55,7 @@ try:
 
     # Display the data
     st.dataframe(finance_data.style.highlight_max(axis=0), use_container_width=True)
-
-    elif menu == "Add Expense":
+   elif menu == "Add Expense":
         st.write("Navigating to Add Expense")
         show_add_expense(finance_data, lambda data: save_finance_data(data, db_file))
     elif menu == "Add Income":
