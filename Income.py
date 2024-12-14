@@ -3,6 +3,7 @@ import pandas as pd
 
 def show_add_income(finance_data, save_data):
     st.title("Add Income")
+    
     with st.form("income_form"):
         date = st.date_input("Date")
         category = st.selectbox("Category", ["Investment", "Salary"])
