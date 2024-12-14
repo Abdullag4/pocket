@@ -22,7 +22,13 @@ def load_data():
 
 # Function to save data
 def save_data(data):
+    """
+    Save the provided DataFrame to the database file (CSV).
+    Also logs the saved data for debugging.
+    """
     data.to_csv(db_file, index=False)
+    st.write("Data successfully saved to file. Current data:")
+    st.write(data)
 
 # Authenticate with GitHub using token from Streamlit secrets
 def authenticate_github():
