@@ -58,10 +58,10 @@ try:
    elif menu == "Add Expense":
         st.write("Navigating to Add Expense")
         show_add_expense(finance_data, lambda data: save_finance_data(data, db_file))
-    elif menu == "Add Income":
+   elif menu == "Add Income":
         st.write("Navigating to Add Income")
         show_add_income(finance_data, lambda data: save_finance_data(data, db_file))
-    elif menu == "Settings":
+   elif menu == "Settings":
         st.write("Navigating to Settings")
         show_settings(finance_data, db_file)
 except Exception as e:
