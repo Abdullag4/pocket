@@ -36,8 +36,18 @@ st.write(f"Debug: Selected menu - {menu}")
 # Page Routing with Debugging
 try:
     if menu == "Overview":
-        st.title("Overview")
-        st.dataframe(finance_data.style.highlight_max(axis=0), use_container_width=True)
+    st.title("Overview")
+
+    # Clean the finance data to ensure numeric values
+    finance_data['Amount'] = pd.to_numeric(finance_data['Amount'], errors='coerce')
+
+    # Handle potential NaN values
+    if finance_data['Amount'].isna().any():
+        st.warning("Some entries have invalid amounts. Please review your data.")
+
+    # Display the data
+    st.dataframe(finance_data.style.highlight_max(axis=0), use_container_width=True)
+
     elif menu == "Add Expense":
         st.write("Navigating to Add Expense")
         show_add_expense(finance_data, lambda data: save_finance_data(data, db_file))
