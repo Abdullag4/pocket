@@ -50,13 +50,15 @@ menu = show_sidebar()
 github_client = authenticate_github()
 
 # Page Routing
-if menu == "Overview":
+elif menu == "Overview":
     st.title("Overview")
-    finance_data = load_data()  # Reload data from the CSV file
-    if not finance_data.empty:
-        st.dataframe(finance_data.style.highlight_max(axis=0))
-    else:
-        st.write("No data available. Add expenses or income to get started!")
+    
+    # Ensure Amount column is numeric
+    finance_data["Amount"] = pd.to_numeric(finance_data["Amount"], errors="coerce")
+    
+    # Display the finance data with highlighted maximum values
+    st.dataframe(finance_data.style.highlight_max(axis=0))
+
 elif menu == "Add Expense":
     finance_data = load_data()  # Load data before modifying
     show_add_expense(finance_data, save_data)
