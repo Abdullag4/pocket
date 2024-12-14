@@ -1,72 +1,70 @@
 import streamlit as st
-import pandas as pd
+from github import Github
 from sidebar import show_sidebar
+from style import apply_styles
 from Expense import show_add_expense
 from Income import show_add_income
 from Setting import show_settings
+import pandas as pd
+
+# Apply custom styles
+apply_styles()
+
+# Authenticate with GitHub using token from Streamlit secrets
+def authenticate_github():
+    try:
+        token = st.secrets["GITHUB_POCKET"]
+        github_client = Github(token)
+        user = github_client.get_user()
+        st.sidebar.success(f"GitHub Authenticated as: {user.login}")
+        return github_client
+    except Exception as e:
+        st.sidebar.error("Failed to authenticate with GitHub.")
+        st.sidebar.write(e)
+        return None
 
 # Load Finance Data
-def load_finance_data(file_path):
-    """Load finance data from a CSV file."""
-    try:
-        data = pd.read_csv(file_path)
-        # Ensure 'Amount' is numeric, coercing errors to NaN
-        data['Amount'] = pd.to_numeric(data['Amount'], errors='coerce')
-        return data
-    except FileNotFoundError:
-        # If file does not exist, create an empty DataFrame
-        return pd.DataFrame(columns=["Date", "Category", "Amount", "Notes"])
-
-def save_finance_data(data, file_path):
-    """Save finance data to a CSV file."""
-    data.to_csv(file_path, index=False)
-
-# File path for the database
 db_file = "database.csv"
+try:
+    finance_data = pd.read_csv(db_file)
+except FileNotFoundError:
+    finance_data = pd.DataFrame(columns=["Date", "Category", "Amount", "Notes"])
 
-# Load or initialize finance data
-finance_data = load_finance_data(db_file)
+# Ensure Amount column is numeric
+finance_data["Amount"] = pd.to_numeric(finance_data["Amount"], errors="coerce")
 
-# Sidebar Menu
+# Display sidebar and select menu
 menu = show_sidebar()
 
-# Debugging: Display the selected menu
-st.write(f"Debug: Selected menu - {menu}")
+# GitHub Authentication
+github_client = authenticate_github()
 
-# Page Routing with Debugging
-try:
-   if menu == "Overview":
+# Page Routing
+if menu == "Overview":
     st.title("Overview")
 
-    # Clean the finance data to ensure numeric values
-    finance_data['Amount'] = pd.to_numeric(finance_data['Amount'], errors='coerce')
-
-    # Handle potential NaN values
-    if finance_data['Amount'].isna().any():
+    # Handle invalid numeric values
+    if finance_data["Amount"].isna().any():
         st.warning("Some entries have invalid amounts. Please review your data.")
 
     # Display the data
     st.dataframe(finance_data.style.highlight_max(axis=0), use_container_width=True)
 
+elif menu == "Add Expense":
+    def save_data(updated_data):
+        updated_data.to_csv(db_file, index=False)
+    show_add_expense(finance_data, save_data)
 
-    # Handle potential NaN values
-    if finance_data['Amount'].isna().any():
-        st.warning("Some entries have invalid amounts. Please review your data.")
+elif menu == "Add Income":
+    def save_data(updated_data):
+        updated_data.to_csv(db_file, index=False)
+    show_add_income(finance_data, save_data)
 
-    # Display the data
-    st.dataframe(finance_data.style.highlight_max(axis=0), use_container_width=True)
-   elif menu == "Add Expense":
-        st.write("Navigating to Add Expense")
-        show_add_expense(finance_data, lambda data: save_finance_data(data, db_file))
-   elif menu == "Add Income":
-        st.write("Navigating to Add Income")
-        show_add_income(finance_data, lambda data: save_finance_data(data, db_file))
-   elif menu == "Settings":
-        st.write("Navigating to Settings")
-        show_settings(finance_data, db_file)
-except Exception as e:
-    st.error("An error occurred while rendering the page.")
-    st.write(f"Error details: {e}")
+elif menu == "Settings":
+    def save_data(updated_data):
+        updated_data.to_csv(db_file, index=False)
+    show_settings(finance_data, db_file)
 
-# Footer Debugging
-st.write("App execution completed.")
+# Save updated finance data to the database
+if 'finance_data' in locals():
+    finance_data.to_csv(db_file, index=False)
