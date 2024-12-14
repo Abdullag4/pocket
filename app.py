@@ -1,70 +1,53 @@
 import streamlit as st
-from github import Github
-from sidebar import show_sidebar
-from style import apply_styles
+import pandas as pd
 from Expense import show_add_expense
 from Income import show_add_income
-from Setting import show_settings
-import pandas as pd
+from Settings import show_settings
 
-# Apply custom styles
-apply_styles()
-
-# File to store the data
+# Database file path
 db_file = "database.csv"
 
-# Function to load data
-def load_data():
-    try:
-        return pd.read_csv(db_file)
-    except FileNotFoundError:
-        return pd.DataFrame(columns=["Date", "Category", "Amount", "Notes"])
+# Load existing data or initialize an empty DataFrame
+try:
+    finance_data = pd.read_csv(db_file)
+    # Ensure the Amount column is numeric
+    finance_data["Amount"] = pd.to_numeric(finance_data["Amount"], errors="coerce")
+except FileNotFoundError:
+    finance_data = pd.DataFrame(columns=["Date", "Category", "Amount", "Notes"])
 
-# Function to save data
+# Save data to the CSV file
 def save_data(data):
-    """
-    Save the provided DataFrame to the database file (CSV).
-    Also logs the saved data for debugging.
-    """
     data.to_csv(db_file, index=False)
-    st.write("Data successfully saved to file. Current data:")
-    st.write(data)
 
-# Authenticate with GitHub using token from Streamlit secrets
-def authenticate_github():
-    try:
-        token = st.secrets["GITHUB_POCKET"]
-        github_client = Github(token)
-        user = github_client.get_user()
-        st.sidebar.success(f"GitHub Authenticated as: {user.login}")
-        return github_client
-    except Exception as e:
-        st.sidebar.error("Failed to authenticate with GitHub.")
-        st.sidebar.write(e)
-        return None
+# Sidebar menu
+st.sidebar.title("Menu")
+menu = st.sidebar.radio("Select a Page:", ["Overview", "Add Expense", "Add Income", "Settings"])
 
-# Display sidebar and select menu
-menu = show_sidebar()
-
-# GitHub Authentication
-github_client = authenticate_github()
-
-# Page Routing
-elif menu == "Overview":
+# Page logic
+if menu == "Overview":
     st.title("Overview")
-    
+    st.subheader("Finance Summary")
+
     # Ensure Amount column is numeric
     finance_data["Amount"] = pd.to_numeric(finance_data["Amount"], errors="coerce")
-    
-    # Display the finance data with highlighted maximum values
+
+    # Display finance data with highlighted maximum values
     st.dataframe(finance_data.style.highlight_max(axis=0))
 
+    # Display summary
+    total_income = finance_data[finance_data["Amount"] > 0]["Amount"].sum()
+    total_expense = finance_data[finance_data["Amount"] < 0]["Amount"].sum()
+    balance = total_income + total_expense
+
+    st.write(f"Total Income: {total_income}")
+    st.write(f"Total Expense: {total_expense}")
+    st.write(f"Current Balance: {balance}")
+
 elif menu == "Add Expense":
-    finance_data = load_data()  # Load data before modifying
     show_add_expense(finance_data, save_data)
+
 elif menu == "Add Income":
-    finance_data = load_data()  # Load data before modifying
     show_add_income(finance_data, save_data)
+
 elif menu == "Settings":
-    finance_data = load_data()  # Load data before modifying
-    show_settings(finance_data, save_data)
+    show_settings()
