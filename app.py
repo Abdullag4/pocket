@@ -3,7 +3,7 @@ import pandas as pd
 from Expense import show_add_expense
 from Income import show_add_income
 from Settings import show_settings
-from Overview import show_overview  # Importing the new Overview module
+from overview import show_overview  # Importing the new Overview module
 
 # Database file path
 db_file = "finance_data.csv"
