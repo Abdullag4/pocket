@@ -3,51 +3,26 @@ import pandas as pd
 from Expense import show_add_expense
 from Income import show_add_income
 from Settings import show_settings
+from Overview import show_overview  # Importing the new Overview module
 
 # Database file path
-db_file = "database.csv"
+db_file = "finance_data.csv"
 
-# Load existing data or initialize an empty DataFrame
+# Load data
 try:
     finance_data = pd.read_csv(db_file)
-    # Ensure the Amount column is numeric
-    finance_data["Amount"] = pd.to_numeric(finance_data["Amount"], errors="coerce")
 except FileNotFoundError:
     finance_data = pd.DataFrame(columns=["Date", "Category", "Amount", "Notes"])
 
-# Save data to the CSV file
-def save_data(data):
-    data.to_csv(db_file, index=False)
+# App Menu
+menu = st.sidebar.selectbox("Menu", ["Overview", "Add Expense", "Add Income", "Settings"])
 
-# Sidebar menu
-st.sidebar.title("Menu")
-menu = st.sidebar.radio("Select a Page:", ["Overview", "Add Expense", "Add Income", "Settings"])
-
-# Page logic
+# Menu Navigation
 if menu == "Overview":
-    st.title("Overview")
-    st.subheader("Finance Summary")
-
-    # Ensure Amount column is numeric
-    finance_data["Amount"] = pd.to_numeric(finance_data["Amount"], errors="coerce")
-
-    # Display finance data with highlighted maximum values
-    st.dataframe(finance_data.style.highlight_max(axis=0))
-
-    # Display summary
-    total_income = finance_data[finance_data["Amount"] > 0]["Amount"].sum()
-    total_expense = finance_data[finance_data["Amount"] < 0]["Amount"].sum()
-    balance = total_income + total_expense
-
-    st.write(f"Total Income: {total_income}")
-    st.write(f"Total Expense: {total_expense}")
-    st.write(f"Current Balance: {balance}")
-
+    show_overview(finance_data)  # Call the new overview function
 elif menu == "Add Expense":
-    show_add_expense(finance_data, save_data)
-
+    finance_data = show_add_expense(finance_data, db_file)
 elif menu == "Add Income":
-    show_add_income(finance_data, save_data)
-
+    finance_data = show_add_income(finance_data, db_file)
 elif menu == "Settings":
-    show_settings()
+    finance_data = show_settings(finance_data, db_file)
