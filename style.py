@@ -1,23 +1,15 @@
 import pandas as pd
 
-def apply_styles(df):
-    """
-    Apply styling to a DataFrame for visualization.
-    Highlights positive values (income) in green and negative values (expenses) in red.
-    """
-    if df.empty:
-        return df  # Return as-is if DataFrame is empty
+def apply_styles(data):
+    try:
+        # Convert numerical values to integers
+        for col in data.select_dtypes(include=['float', 'int']).columns:
+            data[col] = data[col].astype(int)
 
-    # Ensure 'Amount' column exists and is numeric
-    if 'Amount' not in df.columns:
-        raise ValueError("The DataFrame must contain an 'Amount' column for styling.")
-
-    # Convert Amount column to numeric (coerce errors to NaN, replace NaN with 0)
-    df['Amount'] = pd.to_numeric(df['Amount'], errors='coerce').fillna(0)
-
-    # Apply styling to highlight values
-    styled_df = df.style.applymap(
-        lambda x: 'color: green; font-weight: bold' if x > 0 else 'color: red; font-weight: bold',
-        subset=['Amount']
-    )
-    return styled_df
+        # Apply highlighting styles
+        styled_data = data.style.highlight_max(axis=0, props='color:white; background-color:green;') \
+                             .highlight_min(axis=0, props='color:white; background-color:red;')
+        return styled_data
+    except Exception as e:
+        print(f"Error applying styles: {e}")
+        return data  # Return raw data if styling fails
