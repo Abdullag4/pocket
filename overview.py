@@ -6,7 +6,11 @@ def show_overview(finance_data):
     st.header("Overview")
 
     # Ensure the Amount column is numeric
-    finance_data['Amount'] = pd.to_numeric(finance_data['Amount'], errors='coerce').fillna(0)
+    if 'Amount' in finance_data.columns:
+        finance_data['Amount'] = pd.to_numeric(finance_data['Amount'], errors='coerce').fillna(0)
+    else:
+        st.error("Error: 'Amount' column not found in data.")
+        return
 
     # Display Summary
     total_income = finance_data.loc[finance_data['Amount'] > 0, 'Amount'].sum()
@@ -18,9 +22,14 @@ def show_overview(finance_data):
     st.write(f"**Total Expense:** ${total_expense:,.2f}")
     st.write(f"**Current Balance:** ${balance:,.2f}")
 
-    # Display finance data
+    # Display finance data with styles
     if not finance_data.empty:
         st.subheader("Transaction Data")
-        st.dataframe(apply_styles(finance_data))
+        try:
+            st.dataframe(apply_styles(finance_data))  # Apply styles
+        except Exception as e:
+            st.error("Error applying styles to data.")
+            st.write(f"Error details: {e}")
+            st.write(finance_data)  # Show raw data for debugging
     else:
         st.info("No transactions available yet.")
