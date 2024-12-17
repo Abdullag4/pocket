@@ -1,34 +1,28 @@
 import streamlit as st
 import pandas as pd
+from style import apply_styles
 
-def show_overview(finance_data):
-    """
-    Display the overview page with a summary of finances.
-    """
+def show_overview(db_file):
     st.title("Overview")
+    try:
+        # Load data
+        finance_data = pd.read_csv(db_file)
+        finance_data['Amount'] = pd.to_numeric(finance_data['Amount'], errors='coerce')
 
-    # Ensure 'Amount' column is numeric to avoid calculation errors
-    finance_data["Amount"] = pd.to_numeric(finance_data["Amount"], errors="coerce")
+        # Display overview
+        st.subheader("Financial Data")
+        st.dataframe(apply_styles(finance_data))
 
-    # Check if finance_data has any data
-    if finance_data.empty:
-        st.write("No data available.")
-        return
+        # Summary
+        total_income = finance_data[finance_data['Amount'] > 0]['Amount'].sum()
+        total_expense = finance_data[finance_data['Amount'] < 0]['Amount'].sum()
+        net_balance = total_income + total_expense
 
-    # Display the data table
-    st.subheader("Financial Records")
-    st.dataframe(finance_data.style.highlight_max(axis=0))
+        st.subheader("Summary")
+        st.write(f"**Total Income:** ${total_income:.2f}")
+        st.write(f"**Total Expense:** ${abs(total_expense):.2f}")
+        st.write(f"**Net Balance:** ${net_balance:.2f}")
 
-    # Summarize total income and expenses
-    income = finance_data[finance_data["Amount"] > 0]["Amount"].sum()
-    expenses = finance_data[finance_data["Amount"] < 0]["Amount"].sum()
-
-    st.subheader("Summary")
-    col1, col2 = st.columns(2)
-    col1.metric("Total Income", f"${income:.2f}")
-    col2.metric("Total Expenses", f"${expenses:.2f}")
-
-    # Grouped bar chart by category
-    st.subheader("Category-wise Breakdown")
-    category_summary = finance_data.groupby("Category")["Amount"].sum()
-    st.bar_chart(category_summary)
+    except Exception as e:
+        st.error("Failed to load data.")
+        st.write(f"Error details: {e}")
