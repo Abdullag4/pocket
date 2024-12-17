@@ -19,9 +19,9 @@ def show_add_income(finance_data, db_file):
         submitted = st.form_submit_button("Add Income")
     
         if submitted:
-            # Append new data
-            new_data = {"Date": str(date), "Category": category, "Amount": amount, "Notes": notes}
-            finance_data = finance_data.append(new_data, ignore_index=True)
+            # Append new data using pd.concat()
+            new_data = pd.DataFrame([{"Date": str(date), "Category": category, "Amount": amount, "Notes": notes}])
+            finance_data = pd.concat([finance_data, new_data], ignore_index=True)
             save_data(finance_data, db_file)
             st.success("Income added successfully.")
             st.dataframe(apply_styles(finance_data))  # Display updated table
