@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
-from Expense import show_add_expense
-from Income import show_add_income
+from expense import show_add_expense
+from income import show_add_income
 from overview import show_overview  # Corrected case
-from Settings import show_settings
+from settings import show_settings
 from analyze import show_analysis  # For the analysis page
 
 DB_FILE = "finance_data.csv"
