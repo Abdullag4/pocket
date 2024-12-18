@@ -2,27 +2,35 @@ import streamlit as st
 import pandas as pd
 from Expense import show_add_expense
 from Income import show_add_income
+from Overview import show_overview
 from Settings import show_settings
-from overview import show_overview  # Importing the new Overview module
+from Analyze import show_analysis  # Import the new analysis page
 
-# Database file path
-db_file = "finance_data.csv"
+# Database file
+DB_FILE = "finance_data.csv"
 
-# Load data
+# Load or initialize data
 try:
-    finance_data = pd.read_csv(db_file)
+    finance_data = pd.read_csv(DB_FILE)
 except FileNotFoundError:
     finance_data = pd.DataFrame(columns=["Date", "Category", "Amount", "Notes"])
+    finance_data.to_csv(DB_FILE, index=False)
 
-# App Menu
-menu = st.sidebar.selectbox("Menu", ["Overview", "Add Expense", "Add Income", "Settings"])
+# Sidebar navigation
+st.sidebar.title("Navigation")
+page = st.sidebar.radio(
+    "Select a page:",
+    ["Overview", "Add Expense", "Add Income", "Analyze", "Settings"]
+)
 
-# Menu Navigation
-if menu == "Overview":
-    show_overview(finance_data)  # Call the new overview function
-elif menu == "Add Expense":
-    finance_data = show_add_expense(finance_data, db_file)
-elif menu == "Add Income":
-    finance_data = show_add_income(finance_data, db_file)
-elif menu == "Settings":
-    finance_data = show_settings(finance_data, db_file)
+# Page routing
+if page == "Overview":
+    show_overview(finance_data)
+elif page == "Add Expense":
+    finance_data = show_add_expense(finance_data, DB_FILE)
+elif page == "Add Income":
+    finance_data = show_add_income(finance_data, DB_FILE)
+elif page == "Analyze":
+    show_analysis(finance_data)  # Call the new analysis function
+elif page == "Settings":
+    show_settings(finance_data, DB_FILE)
