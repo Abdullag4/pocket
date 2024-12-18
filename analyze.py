@@ -14,17 +14,24 @@ def show_analysis(finance_data):
     if not expense_data.empty:
         st.subheader("Category Distribution for Expenses")
         category_expense_data = expense_data.groupby("Category")["Amount"].sum()
-        fig1, ax1 = plt.subplots()
-        category_expense_data.plot.pie(
-            autopct='%1.1f%%',
-            startangle=90,
-            ax=ax1,
-            labels=category_expense_data.index,
-            colors=plt.cm.Paired.colors
-        )
-        ax1.set_ylabel("")
-        st.pyplot(fig1)
-
+        
+        # Filter out negative values
+        category_expense_data = category_expense_data[category_expense_data >= 0]
+        
+        if not category_expense_data.empty:
+            fig1, ax1 = plt.subplots()
+            category_expense_data.plot.pie(
+                autopct='%1.1f%%',
+                startangle=90,
+                ax=ax1,
+                labels=category_expense_data.index,
+                colors=plt.cm.Paired.colors
+            )
+            ax1.set_ylabel("")
+            st.pyplot(fig1)
+        else:
+            st.info("No valid (non-negative) expense data available for category distribution.")
+        
         st.subheader("Monthly Expense Trend")
         expense_data["Month"] = pd.to_datetime(expense_data["Date"]).dt.to_period("M")
         monthly_expense_trend = expense_data.groupby("Month")["Amount"].sum()
@@ -37,17 +44,24 @@ def show_analysis(finance_data):
     if not income_data.empty:
         st.subheader("Category Distribution for Incomes")
         category_income_data = income_data.groupby("Category")["Amount"].sum()
-        fig2, ax2 = plt.subplots()
-        category_income_data.plot.pie(
-            autopct='%1.1f%%',
-            startangle=90,
-            ax=ax2,
-            labels=category_income_data.index,
-            colors=plt.cm.Set2.colors
-        )
-        ax2.set_ylabel("")
-        st.pyplot(fig2)
-
+        
+        # Filter out negative values
+        category_income_data = category_income_data[category_income_data >= 0]
+        
+        if not category_income_data.empty:
+            fig2, ax2 = plt.subplots()
+            category_income_data.plot.pie(
+                autopct='%1.1f%%',
+                startangle=90,
+                ax=ax2,
+                labels=category_income_data.index,
+                colors=plt.cm.Set2.colors
+            )
+            ax2.set_ylabel("")
+            st.pyplot(fig2)
+        else:
+            st.info("No valid (non-negative) income data available for category distribution.")
+        
         st.subheader("Monthly Income Trend")
         income_data["Month"] = pd.to_datetime(income_data["Date"]).dt.to_period("M")
         monthly_income_trend = income_data.groupby("Month")["Amount"].sum()
