@@ -1,27 +1,37 @@
-from style import apply_styles
-import pandas as pd
 import streamlit as st
+import pandas as pd
 
 def show_add_expense(finance_data, db_file):
     st.header("Add Expense")
-    with st.form("expense_form"):
-        date = st.date_input("Date")
-        category = st.text_input("Category")
-        amount = st.number_input("Amount", min_value=0.0, step=0.01)
-        notes = st.text_area("Notes")
-        submit = st.form_submit_button("Add Expense")
-    
-    if submit:
-        new_data = pd.DataFrame([{"Date": date, "Category": category, "Amount": amount, "Notes": notes}])
-        finance_data = pd.concat([finance_data, new_data], ignore_index=True)
 
-        # Save to CSV
-        finance_data.to_csv(db_file, index=False)
+    # Input fields for adding expense
+    date = st.date_input("Date")
+    category = st.selectbox("Category", ["Food", "Transport", "Rent", "Utilities", "Others"])
+    amount = st.number_input("Amount", min_value=0.0, step=0.01)
+    notes = st.text_area("Notes")
 
-        # Ensure "Amount" is integer
-        finance_data["Amount"] = finance_data["Amount"].astype(int)
+    # Add button
+    if st.button("Add Expense"):
+        try:
+            # Create a new row with Type as "Expense"
+            new_data = pd.DataFrame({
+                "Date": [date],
+                "Category": [category],
+                "Amount": [amount],
+                "Notes": [notes],
+                "Type": ["Expense"]  # Automatically set as "Expense"
+            })
 
-        st.success("Expense added successfully!")
-        st.dataframe(apply_styles(finance_data))  # Display updated table
+            # Append to the existing data
+            finance_data = pd.concat([finance_data, new_data], ignore_index=True)
+
+            # Save to file
+            finance_data.to_csv(db_file, index=False)
+
+            st.success("Expense added successfully!")
+            st.dataframe(finance_data)  # Display updated table
+        except Exception as e:
+            st.error("Failed to add expense.")
+            st.write(f"Error details: {e}")
 
     return finance_data
