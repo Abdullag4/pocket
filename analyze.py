@@ -6,18 +6,18 @@ def show_analysis(finance_data):
     st.title("Financial Analysis")
     
     # Separate data for Expense and Income
-    expense_data = finance_data[finance_data["Type"] == "Expense"]
-    income_data = finance_data[finance_data["Type"] == "Income"]
+    expense_data = finance_data[finance_data["Type"] == "Expense"].copy()
+    income_data = finance_data[finance_data["Type"] == "Income"].copy()
+
+    # Convert negative expenses to positive for display
+    expense_data["Amount"] = expense_data["Amount"].abs()
 
     # Section 1: Expense Analysis
     st.header("Expense Analysis")
     if not expense_data.empty:
         st.subheader("Category Distribution for Expenses")
         category_expense_data = expense_data.groupby("Category")["Amount"].sum()
-        
-        # Filter out negative values
-        category_expense_data = category_expense_data[category_expense_data >= 0]
-        
+
         if not category_expense_data.empty:
             fig1, ax1 = plt.subplots()
             category_expense_data.plot.pie(
@@ -30,12 +30,15 @@ def show_analysis(finance_data):
             ax1.set_ylabel("")
             st.pyplot(fig1)
         else:
-            st.info("No valid (non-negative) expense data available for category distribution.")
+            st.info("No valid expense data available for category distribution.")
         
         st.subheader("Monthly Expense Trend")
         expense_data["Month"] = pd.to_datetime(expense_data["Date"]).dt.to_period("M")
         monthly_expense_trend = expense_data.groupby("Month")["Amount"].sum()
-        st.line_chart(monthly_expense_trend)
+        if not monthly_expense_trend.empty:
+            st.line_chart(monthly_expense_trend)
+        else:
+            st.info("No expense data available for monthly trend.")
     else:
         st.info("No expense data available for analysis.")
 
@@ -44,10 +47,7 @@ def show_analysis(finance_data):
     if not income_data.empty:
         st.subheader("Category Distribution for Incomes")
         category_income_data = income_data.groupby("Category")["Amount"].sum()
-        
-        # Filter out negative values
-        category_income_data = category_income_data[category_income_data >= 0]
-        
+
         if not category_income_data.empty:
             fig2, ax2 = plt.subplots()
             category_income_data.plot.pie(
@@ -60,12 +60,15 @@ def show_analysis(finance_data):
             ax2.set_ylabel("")
             st.pyplot(fig2)
         else:
-            st.info("No valid (non-negative) income data available for category distribution.")
+            st.info("No valid income data available for category distribution.")
         
         st.subheader("Monthly Income Trend")
         income_data["Month"] = pd.to_datetime(income_data["Date"]).dt.to_period("M")
         monthly_income_trend = income_data.groupby("Month")["Amount"].sum()
-        st.line_chart(monthly_income_trend)
+        if not monthly_income_trend.empty:
+            st.line_chart(monthly_income_trend)
+        else:
+            st.info("No income data available for monthly trend.")
     else:
         st.info("No income data available for analysis.")
 
