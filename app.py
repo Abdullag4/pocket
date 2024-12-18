@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from Expense import show_add_expense
 from Income import show_add_income
-from Overview import show_overview
+from overview import show_overview
 from Settings import show_settings
 from Analyze import show_analysis  # Import the new analysis page
 
