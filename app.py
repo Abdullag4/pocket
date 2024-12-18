@@ -1,12 +1,11 @@
 import streamlit as st
 import pandas as pd
-from Expense import show_add_expense
-from Income import show_add_income
-from overview import show_overview
-from Settings import show_settings
-from Analyze import show_analysis  # Import the new analysis page
+from expense import show_add_expense
+from income import show_add_income
+from overview import show_overview  # Corrected case
+from settings import show_settings
+from analyze import show_analysis  # For the analysis page
 
-# Database file
 DB_FILE = "finance_data.csv"
 
 # Load or initialize data
@@ -31,6 +30,6 @@ elif page == "Add Expense":
 elif page == "Add Income":
     finance_data = show_add_income(finance_data, DB_FILE)
 elif page == "Analyze":
-    show_analysis(finance_data)  # Call the new analysis function
+    show_analysis(finance_data)
 elif page == "Settings":
     show_settings(finance_data, DB_FILE)
