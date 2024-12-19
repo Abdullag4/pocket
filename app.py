@@ -12,7 +12,7 @@ DB_FILE = "finance_data.csv"
 try:
     finance_data = pd.read_csv(DB_FILE)
 except FileNotFoundError:
-    finance_data = pd.DataFrame(columns=["Date", "Category", "Amount", "Notes", "Type"])
+    finance_data = pd.DataFrame(columns=["Date", "Category", "Amount", "Type", "Notes"])
     finance_data.to_csv(DB_FILE, index=False)
 
 # Sidebar navigation
