@@ -1,6 +1,24 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import streamlit as st
+
+def show_analysis(finance_data):
+    st.title("📊 Analyze Your Finances")
+
+    tab1, tab2, tab3 = st.tabs(["📉 Expense Analysis", "💹 Income Analysis", "📈 Trends Overview"])
+
+    with tab1:
+        st.subheader("Expenses Breakdown")
+        # Add your expense charts and insights here
+
+    with tab2:
+        st.subheader("Income Breakdown")
+        # Add your income charts and insights here
+
+    with tab3:
+        st.subheader("Trends and Summary")
+        # Add trend analysis charts and data
 
 def show_analysis(finance_data):
     st.title("Analyze Your Data")
