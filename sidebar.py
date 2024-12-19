@@ -10,6 +10,12 @@ def show_sidebar():
     # Set the title for the sidebar
     st.sidebar.title("Navigation")
 
+    st.sidebar.title("📊 Navigation")
+page = st.sidebar.radio(
+    "Choose a section:",
+    ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "⚙️ Settings"]
+)
+
     # Ensure session state for the menu persists
     if "menu" not in st.session_state:
         st.session_state.menu = "Overview"  # Default option
