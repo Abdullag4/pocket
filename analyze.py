@@ -3,89 +3,53 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 def show_analysis(finance_data):
-    st.title("Financial Analysis")
-    
-    # Separate data for Expense and Income
-    expense_data = finance_data[finance_data["Type"] == "Expense"].copy()
-    income_data = finance_data[finance_data["Type"] == "Income"].copy()
+    st.title("Analyze Your Finances")
 
-    # Convert negative expenses to positive for display
-    expense_data["Amount"] = expense_data["Amount"].abs()
+    # Separate expenses and incomes
+    expenses = finance_data[finance_data["Type"] == "Expense"]
+    incomes = finance_data[finance_data["Type"] == "Income"]
 
-    # Section 1: Expense Analysis
-    st.header("Expense Analysis")
-    if not expense_data.empty:
-        st.subheader("Category Distribution for Expenses")
-        category_expense_data = expense_data.groupby("Category")["Amount"].sum()
+    # Summary Statistics
+    st.subheader("Summary Statistics")
+    total_expense = expenses["Amount"].sum()
+    total_income = incomes["Amount"].sum()
+    balance = total_income + total_expense  # Expenses are negative
 
-        if not category_expense_data.empty:
-            fig1, ax1 = plt.subplots()
-            category_expense_data.plot.pie(
-                autopct='%1.1f%%',
-                startangle=90,
-                ax=ax1,
-                labels=category_expense_data.index,
-                colors=plt.cm.Paired.colors
-            )
-            ax1.set_ylabel("")
-            st.pyplot(fig1)
-        else:
-            st.info("No valid expense data available for category distribution.")
-        
-        st.subheader("Monthly Expense Trend")
-        expense_data["Month"] = pd.to_datetime(expense_data["Date"]).dt.to_period("M")
-        monthly_expense_trend = expense_data.groupby("Month")["Amount"].sum()
-        if not monthly_expense_trend.empty:
-            st.line_chart(monthly_expense_trend)
-        else:
-            st.info("No expense data available for monthly trend.")
-    else:
-        st.info("No expense data available for analysis.")
+    st.metric("Total Income", f"${total_income:,.2f}")
+    st.metric("Total Expense", f"${total_expense:,.2f}")
+    st.metric("Balance", f"${balance:,.2f}")
 
-    # Section 2: Income Analysis
-    st.header("Income Analysis")
-    if not income_data.empty:
-        st.subheader("Category Distribution for Incomes")
-        category_income_data = income_data.groupby("Category")["Amount"].sum()
+    # Pie Charts
+    st.subheader("Category Distribution")
 
-        if not category_income_data.empty:
-            fig2, ax2 = plt.subplots()
-            category_income_data.plot.pie(
-                autopct='%1.1f%%',
-                startangle=90,
-                ax=ax2,
-                labels=category_income_data.index,
-                colors=plt.cm.Set2.colors
-            )
-            ax2.set_ylabel("")
-            st.pyplot(fig2)
-        else:
-            st.info("No valid income data available for category distribution.")
-        
-        st.subheader("Monthly Income Trend")
-        income_data["Month"] = pd.to_datetime(income_data["Date"]).dt.to_period("M")
-        monthly_income_trend = income_data.groupby("Month")["Amount"].sum()
-        if not monthly_income_trend.empty:
-            st.line_chart(monthly_income_trend)
-        else:
-            st.info("No income data available for monthly trend.")
-    else:
-        st.info("No income data available for analysis.")
+    # Expense Categories
+    if not expenses.empty:
+        st.write("Expense Categories")
+        category_expense_data = expenses.groupby("Category")["Amount"].sum()
+        fig, ax = plt.subplots()
+        category_expense_data.plot.pie(
+            autopct="%1.1f%%", startangle=90, colors=plt.cm.Paired.colors, ax=ax
+        )
+        ax.set_ylabel("")
+        st.pyplot(fig)
 
-    # Section 3: Overall Analysis
-    st.header("Overall Analysis")
+    # Income Categories
+    if not incomes.empty:
+        st.write("Income Categories")
+        category_income_data = incomes.groupby("Category")["Amount"].sum()
+        fig, ax = plt.subplots()
+        category_income_data.plot.pie(
+            autopct="%1.1f%%", startangle=90, colors=plt.cm.Set3.colors, ax=ax
+        )
+        ax.set_ylabel("")
+        st.pyplot(fig)
+
+    # Trends Over Time
+    st.subheader("Trends Over Time")
     if not finance_data.empty:
-        st.subheader("Expense vs. Income")
-        total_expense = expense_data["Amount"].sum()
-        total_income = income_data["Amount"].sum()
-        overall_data = pd.DataFrame({
-            "Type": ["Expense", "Income"],
-            "Amount": [total_expense, total_income]
-        })
-        fig3, ax3 = plt.subplots()
-        overall_data.set_index("Type")["Amount"].plot.bar(ax=ax3, color=["red", "green"])
-        ax3.set_ylabel("Amount")
-        ax3.set_title("Expense vs Income")
-        st.pyplot(fig3)
-    else:
-        st.info("No financial data available for overall analysis.")
+        finance_data["Date"] = pd.to_datetime(finance_data["Date"])
+        trend_data = finance_data.groupby(["Date", "Type"])["Amount"].sum().unstack().fillna(0)
+        st.line_chart(trend_data)
+
+    st.info("This page provides insights into your financial data, showing category distributions and trends.")
+
