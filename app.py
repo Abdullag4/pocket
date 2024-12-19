@@ -16,12 +16,25 @@ except FileNotFoundError:
     finance_data = pd.DataFrame(columns=["Date", "Category", "Amount", "Type", "Notes"])
     finance_data.to_csv(DB_FILE, index=False)
 
-# Sidebar navigation
-st.sidebar.title("Navigation")
+# Sidebar navigation with summary
+st.sidebar.title("📊 Personal Money Manager")
+st.sidebar.markdown("---")
+
+# Display summary
+total_income = finance_data.loc[finance_data["Type"] == "Income", "Amount"].sum()
+total_expenses = finance_data.loc[finance_data["Type"] == "Expense", "Amount"].sum()
+balance = total_income - total_expenses
+
+st.sidebar.metric("💰 Total Income", f"${total_income:,.2f}")
+st.sidebar.metric("💸 Total Expenses", f"${total_expenses:,.2f}")
+st.sidebar.metric("📈 Balance", f"${balance:,.2f}")
+
+st.sidebar.markdown("---")
 page = st.sidebar.radio(
-    "Select a page:",
-    ["Overview", "Add Expense", "Add Income", "Analyze", "Settings"]
+    "📂 Pages",
+    ["Overview", "Add Expense", "Add Income", "Analyze", "Manage Data", "Settings"]
 )
+
 
 # Page routing
 if page == "📋 Overview":
