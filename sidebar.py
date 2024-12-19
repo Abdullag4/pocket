@@ -9,7 +9,7 @@ def show_sidebar():
     """
 
     st.sidebar.title("📊 Navigation")
-page = st.sidebar.radio(
+    page = st.sidebar.radio(
     "Choose a section:",
     ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "⚙️ Settings"]
 )
