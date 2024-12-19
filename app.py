@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from expense import show_add_expense
+from manage_data import show_manage_data
 from income import show_add_income
 from overview import show_overview  # Corrected case
 from settings import show_settings
