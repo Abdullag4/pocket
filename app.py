@@ -1,36 +1,36 @@
 import streamlit as st
-import pandas as pd
-from expense import show_add_expense
+from sidebar import show_sidebar
+from Overview import show_overview
+from Expense import show_add_expense
+from Income import show_add_income
+from analyze import show_analysis
 from manage_data import show_manage_data
-from income import show_add_income
-from overview import show_overview  # Corrected case
-from settings import show_settings
-from analyze import show_analysis  # For the analysis page
+import pandas as pd
+import os
 
-DB_FILE = "finance_data.csv"
+# Define the database file path
+db_file = "finance_data.csv"
 
-# Load or initialize data
-try:
-    finance_data = pd.read_csv(DB_FILE)
-except FileNotFoundError:
-    finance_data = pd.DataFrame(columns=["Date", "Category", "Amount", "Notes"])
-    finance_data.to_csv(DB_FILE, index=False)
+# Load existing data or initialize a new DataFrame
+if os.path.exists(db_file):
+    finance_data = pd.read_csv(db_file)
+else:
+    finance_data = pd.DataFrame(columns=["Date", "Category", "Amount", "Type"])
 
-# Sidebar navigation
-st.sidebar.title("Navigation")
-page = st.sidebar.radio(
-    "Select a page:",
-    ["Overview", "Add Expense", "Add Income", "Analyze", "Settings"]
-)
+# Set up the app
+st.set_page_config(page_title="Pocket Finance Manager", layout="wide")
 
-# Page routing
-if page == "Overview":
+# Display the sidebar for navigation
+selected_page = show_sidebar()
+
+# Page navigation
+if selected_page == "Overview":
     show_overview(finance_data)
-elif page == "Add Expense":
-    finance_data = show_add_expense(finance_data, DB_FILE)
-elif page == "Add Income":
-    finance_data = show_add_income(finance_data, DB_FILE)
-elif page == "Analyze":
+elif selected_page == "Add Expense":
+    finance_data = show_add_expense(finance_data, db_file)
+elif selected_page == "Add Income":
+    finance_data = show_add_income(finance_data, db_file)
+elif selected_page == "Analyze Data":
     show_analysis(finance_data)
-elif page == "Settings":
-    show_settings(finance_data, DB_FILE)
+elif selected_page == "Manage Data":
+    show_manage_data(finance_data, db_file)
