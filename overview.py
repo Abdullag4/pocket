@@ -1,20 +1,25 @@
-import streamlit as st
-import pandas as pd
+from st_aggrid import AgGrid
+from st_aggrid.grid_options_builder import GridOptionsBuilder
 
 def show_overview(finance_data):
     st.title("Overview")
 
-    # Display current financial data
+    # Interactive AgGrid table
     st.subheader("Financial Data")
-    try:
-        st.dataframe(
-            finance_data.style.format({"Amount": "${:,.2f}"})
-                             .highlight_min(axis=0, subset=["Amount"], color="lightcoral")
-                             .highlight_max(axis=0, subset=["Amount"], color="lightgreen")
-        )
-    except Exception as e:
-        st.error("Error displaying overview table.")
-        st.text(str(e))
+    gb = GridOptionsBuilder.from_dataframe(finance_data)
+    gb.configure_pagination(paginationAutoPageSize=True)
+    gb.configure_side_bar()  # Add a sidebar for filtering
+    gb.configure_default_column(editable=True, sortable=True)
+    grid_options = gb.build()
+
+    grid_response = AgGrid(
+        finance_data,
+        gridOptions=grid_options,
+        enable_enterprise_modules=False,
+        update_mode="MODEL_CHANGED",
+        fit_columns_on_grid_load=True,
+        theme="alpine",  # Other options: 'streamlit', 'balham', 'material'
+    )
 
     # Summary Statistics
     st.subheader("Summary")
