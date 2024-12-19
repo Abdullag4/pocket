@@ -21,12 +21,6 @@ def show_sidebar():
         index=["Overview", "Add Expense", "Add Income", "Settings"].index(st.session_state.menu)
     )
 
-        st.sidebar.title("📊 Navigation")
-    page = st.sidebar.radio(
-    "Choose a section:",
-    ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "⚙️ Settings"]
-)
-
     # Update the session state to reflect the current selection
     st.session_state.menu = menu
 
