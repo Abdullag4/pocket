@@ -7,12 +7,8 @@ def show_sidebar():
     Returns:
         str: The selected menu option.
     """
-    st.sidebar.title("📊 Navigation")
-    page = st.sidebar.radio(
-    "Choose a section:",
-    ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "⚙️ Settings"]
-)
-
+    # Set the title for the sidebar
+    st.sidebar.title("Navigation")
 
     # Ensure session state for the menu persists
     if "menu" not in st.session_state:
@@ -22,11 +18,12 @@ def show_sidebar():
     menu = st.sidebar.selectbox(
         "Choose an option",
         ["Overview", "Add Expense", "Add Income", "Settings"],
-        index=["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "⚙️ Settings"]
-)
+        index=["Overview", "Add Expense", "Add Income", "Settings"].index(st.session_state.menu)
+    )
 
     # Update the session state to reflect the current selection
     st.session_state.menu = menu
 
     # Return the selected menu option
     return menu
+
