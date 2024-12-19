@@ -7,8 +7,6 @@ def show_sidebar():
     Returns:
         str: The selected menu option.
     """
-    # Set the title for the sidebar
-    st.sidebar.title("Navigation")
 
     st.sidebar.title("📊 Navigation")
 page = st.sidebar.radio(
