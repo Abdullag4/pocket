@@ -37,7 +37,7 @@ page = st.sidebar.radio(
 
 
 # Page routing
-if page == "📋 Overview":
+if page == "Overview":
     show_overview(finance_data)
 elif page == "Add Expense":
     finance_data = show_add_expense(finance_data, DB_FILE)
