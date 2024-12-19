@@ -1,3 +1,4 @@
+import streamlit as st
 from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 
@@ -12,7 +13,7 @@ def show_overview(finance_data):
     gb.configure_default_column(editable=True, sortable=True)
     grid_options = gb.build()
 
-    grid_response = AgGrid(
+    AgGrid(
         finance_data,
         gridOptions=grid_options,
         enable_enterprise_modules=False,
