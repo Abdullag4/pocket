@@ -12,13 +12,13 @@ def show_sidebar():
 
     # Ensure session state for the menu persists
     if "menu" not in st.session_state:
-        st.session_state.menu = "Overview"  # Default option
+        st.session_state.menu = "📋 Overview"  # Default option
 
     # Sidebar selectbox to navigate between options
     menu = st.sidebar.selectbox(
         "Choose an option",
         ["Overview", "Add Expense", "Add Income", "Settings"],
-        index=["Overview", "Add Expense", "Add Income", "Settings", "Manage Data"].index(st.session_state.menu)
+        index=["📋 Overview", "Add Expense", "Add Income", "Settings", "Manage Data"].index(st.session_state.menu)
     )
 
     # Update the session state to reflect the current selection
