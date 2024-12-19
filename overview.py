@@ -4,15 +4,6 @@ from st_aggrid.grid_options_builder import GridOptionsBuilder
 def show_overview(finance_data):
     st.title("Overview")
 
-    # Enhanced DataFrame Display
-    gb = GridOptionsBuilder.from_dataframe(finance_data)
-    gb.configure_pagination(paginationAutoPageSize=True)
-    gb.configure_side_bar()
-    grid_options = gb.build()
-
-    AgGrid(finance_data, gridOptions=grid_options, enable_enterprise_modules=True)
-
-
     # Interactive AgGrid table
     st.subheader("Financial Data")
     gb = GridOptionsBuilder.from_dataframe(finance_data)
