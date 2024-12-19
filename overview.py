@@ -2,7 +2,7 @@ from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 
 def show_overview(finance_data):
-    st.title("📋 Overview")
+    st.title("Overview")
 
     # Enhanced DataFrame Display
     gb = GridOptionsBuilder.from_dataframe(finance_data)
