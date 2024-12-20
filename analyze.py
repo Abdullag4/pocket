@@ -16,7 +16,7 @@ def show_analysis(finance_data):
         category_expense_data = expense_data.groupby("Category")["Amount"].sum()
         st.plotly_chart(px.pie(
             category_expense_data,
-            values=-"Amount",
+            values="Amount",
             names=category_expense_data.index,
             title="Expense Breakdown by Category"
         ))
