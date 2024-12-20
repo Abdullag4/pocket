@@ -33,7 +33,7 @@ def show_settings(finance_data, db_file):
 
     # Capture selected rows
     selected_rows = grid_response.get("selected_rows", [])
-    st.write("Debugging Selected Rows: ", selected_rows)  # Debugging output
+    st.write("Selected Rows (Debugging):", selected_rows)  # Debugging output
 
     # Buttons for saving changes and removing rows
     col1, col2 = st.columns(2)
@@ -43,21 +43,25 @@ def show_settings(finance_data, db_file):
             # Save the updated data back to CSV
             pd.DataFrame(grid_response['data']).to_csv(db_file, index=False)
             st.success("Changes saved successfully!")
-            st.experimental_rerun()  # Refresh the app to reflect changes
+            st.experimental_rerun()
 
     with col2:
         if st.button("❌ Remove Selected Rows"):
             try:
-                # Use the index for deletion
-                if len(selected_rows) > 0:
-                    indices_to_remove = [row["_selectedRowNodeInfo"]["rowIndex"] for row in selected_rows if "_selectedRowNodeInfo" in row]
-                    st.write("Indices to Remove: ", indices_to_remove)  # Debugging output
+                # Use the row indices for deletion
+                if selected_rows:
+                    indices_to_remove = [
+                        row["_selectedRowNodeInfo"]["rowIndex"]
+                        for row in selected_rows
+                        if "_selectedRowNodeInfo" in row
+                    ]
+                    st.write("Indices to Remove (Debugging):", indices_to_remove)  # Debugging output
 
                     # Drop rows by their index
                     updated_df = finance_data.drop(indices_to_remove).reset_index(drop=True)
                     updated_df.to_csv(db_file, index=False)
                     st.success("Selected rows removed successfully!")
-                    st.experimental_rerun()  # Refresh the app to reflect changes
+                    st.session_state["rerun_trigger"] = not st.session_state.get("rerun_trigger", False)  # Manual refresh
                 else:
                     st.warning("No rows selected for deletion.")
             except Exception as e:
