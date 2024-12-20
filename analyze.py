@@ -1,55 +1,53 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 
 def show_analysis(finance_data):
-    st.title("Analyze Your Data")
+    st.markdown('<div class="section-title">Analyze Your Finances</div>', unsafe_allow_html=True)
 
-    # Separate data
+    if finance_data.empty:
+        st.info("No data available for analysis. Add some transactions first.")
+        return
+
+    # Expense Analysis
+    st.subheader("💸 Expense Analysis")
     expense_data = finance_data[finance_data["Type"] == "Expense"]
-    income_data = finance_data[finance_data["Type"] == "Income"]
-
-    # Pie Chart for Expenses
-    st.subheader("Expense Analysis")
     if not expense_data.empty:
         category_expense_data = expense_data.groupby("Category")["Amount"].sum()
-        category_expense_data = category_expense_data[category_expense_data > 0]  # Exclude negative values
-        if not category_expense_data.empty:
-            fig1, ax1 = plt.subplots()
-            category_expense_data.plot.pie(
-                autopct="%1.1f%%", startangle=90, ax=ax1, ylabel=""
-            )
-            st.pyplot(fig1)
-        else:
-            st.info("No valid expense data available for the pie chart.")
+        st.plotly_chart(px.pie(
+            category_expense_data,
+            values="Amount",
+            names=category_expense_data.index,
+            title="Expense Breakdown by Category"
+        ))
     else:
-        st.info("No expense data available.")
+        st.write("No expense data available.")
 
-    # Pie Chart for Incomes
-    st.subheader("Income Analysis")
+    # Income Analysis
+    st.subheader("💰 Income Analysis")
+    income_data = finance_data[finance_data["Type"] == "Income"]
     if not income_data.empty:
         category_income_data = income_data.groupby("Category")["Amount"].sum()
-        category_income_data = category_income_data[category_income_data > 0]  # Exclude negative values
-        if not category_income_data.empty:
-            fig2, ax2 = plt.subplots()
-            category_income_data.plot.pie(
-                autopct="%1.1f%%", startangle=90, ax=ax2, ylabel=""
-            )
-            st.pyplot(fig2)
-        else:
-            st.info("No valid income data available for the pie chart.")
+        st.plotly_chart(px.pie(
+            category_income_data,
+            values="Amount",
+            names=category_income_data.index,
+            title="Income Breakdown by Category"
+        ))
     else:
-        st.info("No income data available.")
+        st.write("No income data available.")
 
-    # Trends Chart
-    st.subheader("Trends Over Time")
-    if not finance_data.empty:
-        finance_data["Date"] = pd.to_datetime(finance_data["Date"], errors='coerce')
-        trends_data = finance_data.groupby(["Date", "Type"])["Amount"].sum().unstack(fill_value=0)
-        trends_data = trends_data.clip(lower=0)  # Ensure no negative values in trends
-        if not trends_data.empty:
-            st.line_chart(trends_data)
-        else:
-            st.info("No valid data for trends.")
+    # Trends
+    st.subheader("📈 Financial Trends")
+    trend_data = finance_data.groupby(["Date", "Type"])["Amount"].sum().reset_index()
+    if not trend_data.empty:
+        st.plotly_chart(px.line(
+            trend_data,
+            x="Date",
+            y="Amount",
+            color="Type",
+            title="Trends Over Time",
+            labels={"Amount": "Amount ($)", "Date": "Date"}
+        ))
     else:
-        st.info("No data available for trends.")
+        st.write("No trend data available.")
