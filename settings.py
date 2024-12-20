@@ -48,8 +48,9 @@ def show_settings(finance_data, db_file):
     with col2:
         if st.button("❌ Remove Selected Rows"):
             try:
-                # Use the row indices for deletion
-                if selected_rows:
+                # Ensure selected_rows is not empty
+                if len(selected_rows) > 0:
+                    # Use the `_selectedRowNodeInfo` for index access
                     indices_to_remove = [
                         row["_selectedRowNodeInfo"]["rowIndex"]
                         for row in selected_rows
@@ -61,7 +62,7 @@ def show_settings(finance_data, db_file):
                     updated_df = finance_data.drop(indices_to_remove).reset_index(drop=True)
                     updated_df.to_csv(db_file, index=False)
                     st.success("Selected rows removed successfully!")
-                    st.session_state["rerun_trigger"] = not st.session_state.get("rerun_trigger", False)  # Manual refresh
+                    st.experimental_rerun()
                 else:
                     st.warning("No rows selected for deletion.")
             except Exception as e:
