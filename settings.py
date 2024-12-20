@@ -11,10 +11,11 @@ def show_settings(finance_data, db_file):
 
     st.subheader("Edit or Remove Transactions")
 
-    # AgGrid Configuration for Editable Table
+    # AgGrid Configuration for Editable Table with Row Selection
     grid_options = GridOptionsBuilder.from_dataframe(finance_data)
     grid_options.configure_pagination(paginationAutoPageSize=True)
     grid_options.configure_default_column(wrapText=True, editable=True)  # Enable inline editing
+    grid_options.configure_selection('multiple', use_checkbox=True)  # Add checkbox for row selection
     grid_options.configure_grid_options(domLayout='normal')
 
     # Display Editable Table
@@ -22,7 +23,7 @@ def show_settings(finance_data, db_file):
         finance_data,
         gridOptions=grid_options.build(),
         data_return_mode=DataReturnMode.FILTERED_AND_SORTED,
-        update_mode=GridUpdateMode.MANUAL,  # Allow manual updates
+        update_mode=GridUpdateMode.MANUAL,
         enable_enterprise_modules=False,
         height=400
     )
@@ -46,9 +47,8 @@ def show_settings(finance_data, db_file):
             selected_rows = grid_response['selected_rows']
             if selected_rows:
                 # Filter out selected rows to remove
-                updated_df = finance_data[~finance_data.index.isin(
-                    [row['_selectedRowNodeInfo']['nodeRowIndex'] for row in selected_rows]
-                )]
+                rows_to_remove = [row['_selectedRowNodeInfo']['nodeRowIndex'] for row in selected_rows]
+                updated_df = finance_data.drop(index=rows_to_remove)
                 updated_df.to_csv(db_file, index=False)
                 st.success("Selected rows removed successfully!")
                 # Reload data dynamically
