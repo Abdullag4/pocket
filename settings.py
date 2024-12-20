@@ -19,7 +19,7 @@ def show_settings(finance_data, db_file):
     grid_options.configure_grid_options(domLayout='normal')
 
     # Add index column for easier identification
-    finance_data.reset_index(inplace=True)
+    finance_data.reset_index(inplace=True, drop=True)
 
     # Display the AgGrid table
     grid_response = AgGrid(
@@ -33,6 +33,7 @@ def show_settings(finance_data, db_file):
 
     # Capture selected rows
     selected_rows = grid_response.get("selected_rows", [])
+    st.write("Debugging Selected Rows: ", selected_rows)  # Debugging output
 
     # Buttons for saving changes and removing rows
     col1, col2 = st.columns(2)
@@ -46,16 +47,22 @@ def show_settings(finance_data, db_file):
 
     with col2:
         if st.button("❌ Remove Selected Rows"):
-            if len(selected_rows) > 0:  # Safely check if rows are selected
+            try:
                 # Use the index for deletion
-                indices_to_remove = [row["index"] for row in selected_rows]
-                updated_df = finance_data.drop(indices_to_remove).reset_index(drop=True)
-                updated_df.to_csv(db_file, index=False)
-                st.success("Selected rows removed successfully!")
-                st.experimental_rerun()  # Refresh the app to reflect changes
-            else:
-                st.warning("No rows selected for deletion.")
+                if len(selected_rows) > 0:
+                    indices_to_remove = [row["_selectedRowNodeInfo"]["rowIndex"] for row in selected_rows if "_selectedRowNodeInfo" in row]
+                    st.write("Indices to Remove: ", indices_to_remove)  # Debugging output
+
+                    # Drop rows by their index
+                    updated_df = finance_data.drop(indices_to_remove).reset_index(drop=True)
+                    updated_df.to_csv(db_file, index=False)
+                    st.success("Selected rows removed successfully!")
+                    st.experimental_rerun()  # Refresh the app to reflect changes
+                else:
+                    st.warning("No rows selected for deletion.")
+            except Exception as e:
+                st.error(f"Error during row removal: {str(e)}")
 
     # Show the updated data
     st.subheader("Updated Transactions")
-    st.write(finance_data.drop(columns=["index"]))
+    st.write(finance_data)
