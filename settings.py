@@ -73,7 +73,7 @@ def show_settings(finance_data, db_file):
     # Refresh the page if data was updated
     if st.session_state.get('data_updated', False):
         st.session_state['data_updated'] = False  # Reset the flag
-        st.experimental_set_query_params(refresh="true")
+        st.query_params(refresh="true")
 
     # Show the updated data
     st.subheader("Updated Transactions")
