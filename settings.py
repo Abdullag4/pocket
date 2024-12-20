@@ -18,6 +18,9 @@ def show_settings(finance_data, db_file):
     grid_options.configure_selection('multiple', use_checkbox=True)  # Add checkboxes for row selection
     grid_options.configure_grid_options(domLayout='normal')
 
+    # Add index column for easier identification
+    finance_data.reset_index(inplace=True)
+
     # Display the AgGrid table
     grid_response = AgGrid(
         finance_data,
@@ -43,10 +46,10 @@ def show_settings(finance_data, db_file):
 
     with col2:
         if st.button("❌ Remove Selected Rows"):
-            if selected_rows:  # Check if rows are selected
-                # Use the unique identifier for deletion
+            if len(selected_rows) > 0:  # Safely check if rows are selected
+                # Use the index for deletion
                 indices_to_remove = [row["index"] for row in selected_rows]
-                updated_df = finance_data.drop(index=indices_to_remove).reset_index(drop=True)
+                updated_df = finance_data.drop(indices_to_remove).reset_index(drop=True)
                 updated_df.to_csv(db_file, index=False)
                 st.success("Selected rows removed successfully!")
                 st.experimental_rerun()  # Refresh the app to reflect changes
@@ -55,4 +58,4 @@ def show_settings(finance_data, db_file):
 
     # Show the updated data
     st.subheader("Updated Transactions")
-    st.write(finance_data)
+    st.write(finance_data.drop(columns=["index"]))
