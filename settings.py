@@ -28,8 +28,8 @@ def show_settings(finance_data, db_file):
         height=400
     )
 
-    # Edited data from AgGrid
-    updated_data = grid_response['data']
+    # Get selected rows from AgGrid response
+    selected_rows = grid_response.get("selected_rows", [])
 
     # Buttons for Save and Delete
     col1, col2 = st.columns(2)
@@ -37,17 +37,19 @@ def show_settings(finance_data, db_file):
     with col1:
         if st.button("💾 Save Changes"):
             # Save the updated data back to CSV
-            pd.DataFrame(updated_data).to_csv(db_file, index=False)
+            pd.DataFrame(grid_response['data']).to_csv(db_file, index=False)
             st.success("Changes saved successfully!")
             # Reload data dynamically
             finance_data = pd.read_csv(db_file)
 
     with col2:
         if st.button("❌ Remove Selected Rows"):
-            selected_rows = grid_response['selected_rows']
-            if len(selected_rows) > 0:  # Safely check if rows are selected
+            if selected_rows:  # Safely check if rows are selected
                 # Get indices of rows to remove
-                rows_to_remove = [row['_selectedRowNodeInfo']['nodeRowIndex'] for row in selected_rows]
+                rows_to_remove = [
+                    int(row["_selectedRowNodeInfo"]["nodeRowIndex"])
+                    for row in selected_rows
+                ]
                 updated_df = finance_data.drop(index=rows_to_remove).reset_index(drop=True)
                 updated_df.to_csv(db_file, index=False)
                 st.success("Selected rows removed successfully!")
