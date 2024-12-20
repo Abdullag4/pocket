@@ -18,5 +18,5 @@ def show_overview(finance_data):
     total_expenses = finance_data.loc[finance_data['Type'] == "Expense", "Amount"].sum()
     net_balance = total_income + total_expenses  # Expenses are negative
     st.metric(label="💰 Total Income", value=f"${total_income:,.2f}")
-    st.metric(label="💸 Total Expenses", value=f"${-total_expenses:,.2f}")
+    st.metric(label="💸 Total Expenses", value=f"${total_expenses:,.2f}")
     st.metric(label="📊 Net Balance", value=f"${net_balance:,.2f}")
