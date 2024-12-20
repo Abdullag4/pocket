@@ -24,7 +24,7 @@ configure_theme()
 st.sidebar.title("📊 Navigation")
 page = st.sidebar.radio(
     "Choose a section:",
-    ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "⚙️ Settings"]
+    ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "Manage Data", "⚙️ Settings"]
 )
 
 # Page routing
