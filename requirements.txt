@@ -2,5 +2,5 @@ streamlit
 pandas
 PyGithub
 matplotlib
-st-aggrid
+streamlit-aggrid
 plotly
