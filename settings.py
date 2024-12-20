@@ -38,16 +38,24 @@ def show_settings(finance_data, db_file):
             # Save the updated data back to CSV
             pd.DataFrame(updated_data).to_csv(db_file, index=False)
             st.success("Changes saved successfully!")
-            st.experimental_rerun()  # Refresh the app to reflect changes
+            # Reload data dynamically
+            finance_data = pd.read_csv(db_file)
 
     with col2:
         if st.button("❌ Remove Selected Rows"):
             selected_rows = grid_response['selected_rows']
             if selected_rows:
                 # Filter out selected rows to remove
-                updated_df = finance_data[~finance_data.index.isin([row['_selectedRowNodeInfo']['nodeRowIndex'] for row in selected_rows])]
+                updated_df = finance_data[~finance_data.index.isin(
+                    [row['_selectedRowNodeInfo']['nodeRowIndex'] for row in selected_rows]
+                )]
                 updated_df.to_csv(db_file, index=False)
                 st.success("Selected rows removed successfully!")
-                st.experimental_rerun()
+                # Reload data dynamically
+                finance_data = pd.read_csv(db_file)
             else:
                 st.warning("Please select rows to delete.")
+
+    # Display updated data table after saving/removing
+    st.subheader("Updated Transactions")
+    st.write(finance_data)
