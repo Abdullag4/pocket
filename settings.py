@@ -45,16 +45,16 @@ def show_settings(finance_data, db_file):
     with col2:
         if st.button("❌ Remove Selected Rows"):
             selected_rows = grid_response['selected_rows']
-            if selected_rows:
-                # Filter out selected rows to remove
+            if len(selected_rows) > 0:  # Safely check if rows are selected
+                # Get indices of rows to remove
                 rows_to_remove = [row['_selectedRowNodeInfo']['nodeRowIndex'] for row in selected_rows]
-                updated_df = finance_data.drop(index=rows_to_remove)
+                updated_df = finance_data.drop(index=rows_to_remove).reset_index(drop=True)
                 updated_df.to_csv(db_file, index=False)
                 st.success("Selected rows removed successfully!")
                 # Reload data dynamically
                 finance_data = pd.read_csv(db_file)
             else:
-                st.warning("Please select rows to delete.")
+                st.warning("No rows selected for deletion.")
 
     # Display updated data table after saving/removing
     st.subheader("Updated Transactions")
