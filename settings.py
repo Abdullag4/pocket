@@ -43,8 +43,6 @@ def show_settings(finance_data, db_file):
             # Save the updated data back to CSV
             pd.DataFrame(grid_response['data']).to_csv(db_file, index=False)
             st.success("Changes saved successfully!")
-            # Set a flag to refresh the page
-            st.session_state['data_updated'] = True
 
     with col2:
         if st.button("❌ Remove Selected Rows"):
@@ -63,7 +61,7 @@ def show_settings(finance_data, db_file):
                     updated_df = finance_data.drop(indices_to_remove).reset_index(drop=True)
                     updated_df.to_csv(db_file, index=False)
                     st.success("Selected rows removed successfully!")
-                    # Set a flag to refresh the page
+                    # Force re-render using session state
                     st.session_state['data_updated'] = True
                 else:
                     st.warning("No rows selected for deletion.")
@@ -73,7 +71,7 @@ def show_settings(finance_data, db_file):
     # Refresh the page if data was updated
     if st.session_state.get('data_updated', False):
         st.session_state['data_updated'] = False  # Reset the flag
-        st.query_params(refresh="true")
+        st.experimental_rerun()
 
     # Show the updated data
     st.subheader("Updated Transactions")
