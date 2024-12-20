@@ -13,7 +13,7 @@ def show_analysis(finance_data):
     st.subheader("💸 Expense Analysis")
     expense_data = finance_data[finance_data["Type"] == "Expense"]
     if not expense_data.empty:
-        category_expense_data = expense_data.groupby("Category")["Amount"].sum()
+        category_expense_data = expense_data.groupby("Category")["Amount"].sum(-)
         st.plotly_chart(px.pie(
             category_expense_data,
             values="Amount",
