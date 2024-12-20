@@ -61,17 +61,20 @@ def show_settings(finance_data, db_file):
                     updated_df = finance_data.drop(indices_to_remove).reset_index(drop=True)
                     updated_df.to_csv(db_file, index=False)
                     st.success("Selected rows removed successfully!")
-                    # Force re-render using session state
+                    # Trigger re-render using session state
                     st.session_state['data_updated'] = True
+                    st.experimental_set_query_params(data_updated="true")  # Trigger page refresh
                 else:
                     st.warning("No rows selected for deletion.")
             except Exception as e:
                 st.error(f"Error during row removal: {str(e)}")
 
-    # Refresh the page if data was updated
-    if st.session_state.get('data_updated', False):
-        st.session_state['data_updated'] = False  # Reset the flag
-        st.experimental_rerun()
+    # React to query parameters for refreshing
+    query_params = st.experimental_get_query_params()
+    if query_params.get("data_updated") == ["true"]:
+        st.experimental_set_query_params(data_updated="false")
+        # Emulate a refresh by resetting the page
+        st.experimental_set_query_params()
 
     # Show the updated data
     st.subheader("Updated Transactions")
