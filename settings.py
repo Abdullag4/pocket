@@ -43,7 +43,8 @@ def show_settings(finance_data, db_file):
             # Save the updated data back to CSV
             pd.DataFrame(grid_response['data']).to_csv(db_file, index=False)
             st.success("Changes saved successfully!")
-            st.experimental_rerun()
+            # Trigger a rerun
+            st.session_state['rerun'] = True
 
     with col2:
         if st.button("❌ Remove Selected Rows"):
@@ -62,11 +63,17 @@ def show_settings(finance_data, db_file):
                     updated_df = finance_data.drop(indices_to_remove).reset_index(drop=True)
                     updated_df.to_csv(db_file, index=False)
                     st.success("Selected rows removed successfully!")
-                    st.experimental_rerun()
+                    # Trigger a rerun
+                    st.session_state['rerun'] = True
                 else:
                     st.warning("No rows selected for deletion.")
             except Exception as e:
                 st.error(f"Error during row removal: {str(e)}")
+
+    # Handle rerun
+    if st.session_state.get('rerun', False):
+        st.session_state['rerun'] = False
+        st.experimental_rerun()
 
     # Show the updated data
     st.subheader("Updated Transactions")
