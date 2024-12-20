@@ -1,42 +1,22 @@
-from st_aggrid import AgGrid
-from st_aggrid.grid_options_builder import GridOptionsBuilder
+import streamlit as st
+from st_aggrid import AgGrid, GridOptionsBuilder
 
 def show_overview(finance_data):
-    st.title("Overview")
+    st.markdown('<div class="section-title">Overview</div>', unsafe_allow_html=True)
 
-     # Enhanced DataFrame Display
-    gb = GridOptionsBuilder.from_dataframe(finance_data)
-    gb.configure_pagination(paginationAutoPageSize=True)
-    gb.configure_side_bar()
-    grid_options = gb.build()
+    if finance_data.empty:
+        st.info("No data available. Start adding expenses and incomes.")
+    else:
+        st.subheader("📋 All Transactions")
+        grid_options = GridOptionsBuilder.from_dataframe(finance_data)
+        grid_options.configure_pagination(paginationAutoPageSize=True)
+        grid_options.configure_default_column(wrapText=True)
+        AgGrid(finance_data, gridOptions=grid_options.build(), height=400)
 
-    AgGrid(finance_data, gridOptions=grid_options, enable_enterprise_modules=True)
-    
-    # Interactive AgGrid table
-    st.subheader("Financial Data")
-    gb = GridOptionsBuilder.from_dataframe(finance_data)
-    gb.configure_pagination(paginationAutoPageSize=True)
-    gb.configure_side_bar()  # Add a sidebar for filtering
-    gb.configure_default_column(editable=True, sortable=True)
-    grid_options = gb.build()
-
-    AgGrid(
-        finance_data,
-        gridOptions=grid_options,
-        enable_enterprise_modules=False,
-        update_mode="MODEL_CHANGED",
-        fit_columns_on_grid_load=True,
-        theme="alpine",  # Other options: 'streamlit', 'balham', 'material'
-    )
-
-    # Summary Statistics
-    st.subheader("Summary")
-    total_expense = finance_data.loc[finance_data["Type"] == "Expense", "Amount"].sum()
-    total_income = finance_data.loc[finance_data["Type"] == "Income", "Amount"].sum()
-    balance = total_income + total_expense  # Expenses are negative
-
-    st.metric("Total Income", f"${total_income:,.2f}")
-    st.metric("Total Expense", f"${total_expense:,.2f}")
-    st.metric("Balance", f"${balance:,.2f}")
-
-    st.success("Overview loaded successfully!")
+    # Metrics
+    total_income = finance_data.loc[finance_data['Type'] == "Income", "Amount"].sum()
+    total_expenses = finance_data.loc[finance_data['Type'] == "Expense", "Amount"].sum()
+    net_balance = total_income + total_expenses  # Expenses are negative
+    st.metric(label="💰 Total Income", value=f"${total_income:,.2f}")
+    st.metric(label="💸 Total Expenses", value=f"${-total_expenses:,.2f}")
+    st.metric(label="📊 Net Balance", value=f"${net_balance:,.2f}")
