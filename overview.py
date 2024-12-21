@@ -8,10 +8,9 @@ def show_overview(finance_data):
     if finance_data.empty:
         st.info("No data available. Start adding expenses and incomes.")
     else:
-        # Ensure the Date column is properly formatted and sorted
+        # Ensure the Date column is properly formatted
         if "Date" in finance_data.columns:
             finance_data["Date"] = pd.to_datetime(finance_data["Date"], errors="coerce")
-            finance_data = finance_data.sort_values(by="Date", ascending=False)
 
         st.subheader("📋 All Transactions")
         
