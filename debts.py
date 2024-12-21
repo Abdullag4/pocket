@@ -25,6 +25,8 @@ def show_debt_page(debt_data, debt_file):
     with st.form("add_debt_form"):
         name = st.text_input("Name", placeholder="Enter the name")
         amount = st.number_input("Amount", min_value=0.0, step=1.0)
+        type = st.selectbox("Type", ["Owe Me", "I Owe"])
+        status = st.selectbox("Status", ["Pending", "Paid"])
         due_date = st.date_input("Due Date")
         reason = st.text_input("Reason", placeholder="Enter the reason")
         submitted = st.form_submit_button("Add Debt")
@@ -32,7 +34,7 @@ def show_debt_page(debt_data, debt_file):
         if submitted:
             if name and amount and due_date:
                 # Create a new debt record
-                new_debt = {"Name": name, "Reason": reason, "Amount": amount, "Due Date": str(due_date)}
+                new_debt = {"Name": name, "Reason": reason, "Type": type, "Status": status, "Amount": amount, "Due Date": str(due_date)}
 
                 # Append the new record to the DataFrame
                 st.session_state["debt_data"] = pd.concat(
