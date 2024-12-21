@@ -13,9 +13,12 @@ def show_add_expense(finance_data, db_file):
     # Add button
     if st.button("Add Expense"):
         try:
+            # Ensure the date is saved as a string
+            formatted_date = date.strftime("%Y-%m-%d")
+
             # Create a new row with Type as "Expense"
             new_data = pd.DataFrame({
-                "Date": [date],
+                "Date": [formatted_date],
                 "Category": [category],
                 "Amount": [amount],
                 "Notes": [notes],
