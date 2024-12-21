@@ -1,42 +1,40 @@
 import streamlit as st
 import pandas as pd
-from datetime import date
 
 def show_add_income(finance_data, db_file):
-    st.title("➕ Add Income")
+    st.header("Add Income")
 
-    # Add Income Form
-    with st.form("add_income_form"):
-        income_date = st.date_input("Date", value=date.today())  # Default to today
-        category = st.text_input("Category")
-        amount = st.number_input("Amount", min_value=0.0, step=0.01)
-        notes = st.text_area("Notes")
-        submitted = st.form_submit_button("Add Income")
+    # Input fields for adding income
+    date = st.date_input("Date")
+    category = st.selectbox("Category", ["Salary", "Business", "Investments", "Gifts", "Others"])
+    amount = st.number_input("Amount", min_value=0.0, step=0.01)
+    notes = st.text_area("Notes")
 
-        if submitted:
-            # Validate inputs
-            if not category or amount <= 0:
-                st.warning("Please fill in all required fields with valid values.")
-            else:
-                new_income = {
-                    "Date": income_date.strftime("%Y-%m-%d"),  # Format date properly
-                    "Category": category,
-                    "Amount": amount,
-                    "Type": "Income",
-                    "Notes": notes,
-                }
-                # Ensure finance_data is a valid DataFrame
-                if finance_data is None:
-                    finance_data = pd.DataFrame(columns=["Date", "Category", "Amount", "Type", "Notes"])
+    # Add button
+    if st.button("Add Income"):
+        try:
+            # Ensure the date is saved as a string
+            formatted_date = date.strftime("%Y-%m-%d")
 
-                # Append the new income and save to the CSV file
-                finance_data = finance_data.append(new_income, ignore_index=True)
-                finance_data.to_csv(db_file, index=False)
-                st.success("Income added successfully!")
-                return finance_data
+            # Create a new row with Type as "Income"
+            new_data = pd.DataFrame({
+                "Date": [formatted_date],
+                "Category": [category],
+                "Amount": [amount],
+                "Notes": [notes],
+                "Type": ["Income"]  # Automatically set as "Income"
+            })
 
-    # Display Updated Table
-    st.subheader("Updated Incomes")
-    st.dataframe(finance_data[finance_data["Type"] == "Income"])
+            # Append to the existing data
+            finance_data = pd.concat([finance_data, new_data], ignore_index=True)
+
+            # Save to file
+            finance_data.to_csv(db_file, index=False)
+
+            st.success("Income added successfully!")
+            st.dataframe(finance_data)  # Display updated table
+        except Exception as e:
+            st.error("Failed to add income.")
+            st.write(f"Error details: {e}")
 
     return finance_data
