@@ -5,28 +5,29 @@ from income import show_add_income
 from overview import show_overview
 from settings import show_settings
 from analyze import show_analysis
-from debts import show_debt_page
 from theme import configure_theme  # Global Theme Configuration
 from manage_data import show_manage_data  # For managing data
+from debts import show_debt_page  # For debt management
 
+# File paths
 DB_FILE = "finance_data.csv"
 DEBT_FILE = "debt_data.csv"
 
 # Load or initialize data
 @st.cache_data
-def load_data(file_path):
+def load_or_initialize_data(file_path, columns):
     try:
         return pd.read_csv(file_path)
     except FileNotFoundError:
-        return pd.DataFrame()
+        # Initialize with empty DataFrame with specified columns
+        data = pd.DataFrame(columns=columns)
+        data.to_csv(file_path, index=False)
+        return data
 
-finance_data = load_data(DB_FILE)
-debt_data = load_data(DEBT_FILE)
-try:
-    finance_data = pd.read_csv(DB_FILE)
-except FileNotFoundError:
-    finance_data = pd.DataFrame(columns=["Date", "Category", "Amount", "Type", "Notes"])
-    finance_data.to_csv(DB_FILE, index=False)
+finance_data = load_or_initialize_data(DB_FILE, ["Date", "Category", "Amount", "Type", "Notes"])
+debt_data = load_or_initialize_data(
+    DEBT_FILE, ["Type", "Name", "Amount", "Due Date", "Reason", "Status"]
+)
 
 # Apply global theme configuration
 configure_theme()
@@ -35,7 +36,7 @@ configure_theme()
 st.sidebar.title("📊 Navigation")
 page = st.sidebar.radio(
     "Choose a section:",
-    ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "Manage Data", "⚙️ Settings", "Manage Debts"]
+    ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "Manage Data", "⚙️ Settings", "💳 Debt Management"]
 )
 
 # Page routing
@@ -48,8 +49,8 @@ elif page == "➕ Add Income":
 elif page == "📈 Analyze":
     show_analysis(finance_data)
 elif page == "Manage Data":
-    show_manage_data(finance_data, DB_FILE)  
-elif page == "Debts":
-    show_debts(finance_data, DB_FILE, debt_data)  
+    show_manage_data(finance_data, DB_FILE)
 elif page == "⚙️ Settings":
     show_settings(finance_data, DB_FILE)
+elif page == "💳 Debt Management":
+    show_debt_page(debt_data, DEBT_FILE)
