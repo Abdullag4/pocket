@@ -1,57 +1,51 @@
 import streamlit as st
 import pandas as pd
+from datetime import date
 
 def show_debt_page(debt_data, db_file):
     st.title("💳 Debt Management")
-    st.subheader("Manage Your Debts")
 
-    # Display current debts
-    st.header("Current Debts")
+    # Current Debts
+    st.subheader("Current Debts")
     if debt_data.empty:
-        st.info("No debts recorded. Add some debts to get started.")
+        st.info("No debts recorded.")
     else:
         st.dataframe(debt_data)
 
-    # Add a new debt
+    # Add a New Debt
     st.subheader("Add a New Debt")
-    with st.form("add_debt_form", clear_on_submit=True):
-        debt_type = st.selectbox("Debt Type", ["Owe Someone", "Owed by Someone"])
-        name = st.text_input("Name of Person/Entity")
-        amount = st.number_input("Debt Amount", min_value=0.01, format="%.2f")
-        due_date = st.date_input("Due Date")
-        reason = st.text_area("Reason for Debt")
+    with st.form("add_debt_form"):
+        debt_type = st.selectbox("Type", ["Owe Me", "I Owe"])
+        name = st.text_input("Name (e.g., Creditor or Debtor)")
+        amount = st.number_input("Amount", min_value=0.0, step=0.01)
+        due_date = st.date_input("Due Date", min_value=date.today())
+        reason = st.text_area("Reason")
         status = st.selectbox("Status", ["Pending", "Paid"])
         submitted = st.form_submit_button("Add Debt")
 
         if submitted:
-            if not name:
-                st.warning("Please provide the name of the person/entity.")
-            else:
-                new_debt = pd.DataFrame(
-                    [{
-                        "Type": debt_type,
-                        "Name": name,
-                        "Amount": amount,
-                        "Due Date": due_date,
-                        "Reason": reason,
-                        "Status": status,
-                    }]
-                )
-                # Use pd.concat to append the new debt
-                debt_data = pd.concat([debt_data, new_debt], ignore_index=True)
-                debt_data.to_csv(db_file, index=False)
-                st.success("Debt added successfully!")
+            new_debt = {
+                "Type": debt_type,
+                "Name": name,
+                "Amount": amount,
+                "Due Date": due_date.strftime("%Y-%m-%d"),
+                "Reason": reason,
+                "Status": status,
+            }
+            # Update the debt data in session state and save to file
+            st.session_state["debt_data"] = st.session_state["debt_data"].append(new_debt, ignore_index=True)
+            st.session_state["debt_data"].to_csv(db_file, index=False)
+            st.success("Debt added successfully!")
+            st.experimental_rerun()  # Refresh the page to display changes
 
-    # Option to delete debts
-    st.subheader("Delete Debts")
-    indices_to_delete = st.multiselect(
-        "Select rows to delete by index:",
-        debt_data.index.tolist()
-    )
-    if st.button("Delete Selected Debts"):
-        if indices_to_delete:
-            debt_data = debt_data.drop(indices_to_delete).reset_index(drop=True)
-            debt_data.to_csv(db_file, index=False)
+    # Remove Debts
+    st.subheader("Remove a Debt")
+    debts_to_remove = st.multiselect("Select debts to remove by index:", debt_data.index.tolist())
+    if st.button("Remove Selected Debts"):
+        if debts_to_remove:
+            st.session_state["debt_data"].drop(debts_to_remove, inplace=True)
+            st.session_state["debt_data"].to_csv(db_file, index=False)
             st.success("Selected debts removed successfully!")
+            st.experimental_rerun()  # Refresh the page to display changes
         else:
-            st.warning("No debts selected for deletion.")
+            st.warning("No debts selected for removal.")
