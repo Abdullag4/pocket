@@ -24,7 +24,7 @@ def load_data(file_path, columns):
 
 # Initialize session state for data persistence
 if "finance_data" not in st.session_state:
-    st.session_state["finance_data"] = load_data(DB_FILE, ["Date", "Category", "Amount", "Type", "Notes"])
+    st.session_state["finance_data"] = finance_data = load_data(DB_FILE, ["Date", "Category", "Amount", "Type", "Notes"])
 
 if "debt_data" not in st.session_state:
     st.session_state["debt_data"] = load_data(
