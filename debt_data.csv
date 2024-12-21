@@ -1,0 +1,3 @@
+Type,Name,Amount,Due Date,Reason,Status
+Owed,John Doe,500,2024-12-31,Loan for rent,Active
+Owing,Alice Smith,200,2024-12-25,Dinner party cost,Active
