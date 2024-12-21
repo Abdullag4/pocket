@@ -5,6 +5,7 @@ from income import show_add_income
 from overview import show_overview
 from settings import show_settings
 from analyze import show_analysis
+from debts import show_debts
 from theme import configure_theme  # Global Theme Configuration
 from manage_data import show_manage_data  # For managing data
 
@@ -24,7 +25,7 @@ configure_theme()
 st.sidebar.title("📊 Navigation")
 page = st.sidebar.radio(
     "Choose a section:",
-    ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "Manage Data", "⚙️ Settings"]
+    ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "Manage Data", "⚙️ Settings", "Debts"]
 )
 
 # Page routing
@@ -38,5 +39,7 @@ elif page == "📈 Analyze":
     show_analysis(finance_data)
 elif page == "Manage Data":
     show_manage_data(finance_data, DB_FILE)
+ elif page == "Debts":
+    show_debts(finance_data, DB_FILE)   
 elif page == "⚙️ Settings":
     show_settings(finance_data, DB_FILE)
