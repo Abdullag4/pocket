@@ -25,12 +25,18 @@ def show_add_income(finance_data, db_file):
                     "Type": "Income",
                     "Notes": notes,
                 }
+                # Ensure finance_data is a valid DataFrame
+                if finance_data is None:
+                    finance_data = pd.DataFrame(columns=["Date", "Category", "Amount", "Type", "Notes"])
+
                 # Append the new income and save to the CSV file
-                st.session_state["finance_data"] = st.session_state["finance_data"].append(new_income, ignore_index=True)
-                st.session_state["finance_data"].to_csv(db_file, index=False)
+                finance_data = finance_data.append(new_income, ignore_index=True)
+                finance_data.to_csv(db_file, index=False)
                 st.success("Income added successfully!")
-                st.experimental_rerun()  # Refresh the page to display changes
+                return finance_data
 
     # Display Updated Table
     st.subheader("Updated Incomes")
     st.dataframe(finance_data[finance_data["Type"] == "Income"])
+
+    return finance_data
