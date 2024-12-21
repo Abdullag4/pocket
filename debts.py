@@ -5,7 +5,7 @@ import pandas as pd
 def show_debt_page(debt_data, debt_file):
     # Initialize session state for debt_data if it does not exist
     if "debt_data" not in st.session_state:
-        st.session_state["debt_data"] = pd.DataFrame(columns=["Name", "Amount", "Due Date"])  # Replace with your columns
+        st.session_state["debt_data"] = pd.DataFrame(columns=["Type", "Name", "Amount", "Due Date", "Reason", "State"])  # Replace with your columns
 
     # Validate that debt_data is a DataFrame
     if not isinstance(st.session_state["debt_data"], pd.DataFrame):
