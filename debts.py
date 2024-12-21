@@ -32,7 +32,7 @@ def show_debt_page(debt_data, debt_file):
         if submitted:
             if name and amount and due_date:
                 # Create a new debt record
-                new_debt = {"Name": name, "Amount": amount, "Due Date": str(due_date)}
+                new_debt = {"Name": name, "Reason": reason, "Amount": amount, "Due Date": str(due_date)}
 
                 # Append the new record to the DataFrame
                 st.session_state["debt_data"] = pd.concat(
