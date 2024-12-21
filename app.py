@@ -5,7 +5,7 @@ from income import show_add_income
 from overview import show_overview
 from settings import show_settings
 from analyze import show_analysis
-from manage_data import show_manage_data
+from debts import show_debt_page
 from theme import configure_theme  # Global Theme Configuration
 from manage_data import show_manage_data  # For managing data
 
