@@ -35,8 +35,7 @@ configure_theme()
 st.sidebar.title("📊 Navigation")
 page = st.sidebar.radio(
     "Choose a section:",
-    "Manage Data": lambda: show_manage_data(finance_data, DB_FILE)
-    ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "Manage Data", "⚙️ Settings"]
+    ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "Manage Data", "⚙️ Settings", "Manage Debts"]
 )
 
 # Page routing
