@@ -9,8 +9,8 @@ def show_manage_data(finance_data, db_file):
     if "Date" in finance_data.columns:
         finance_data["Date"] = pd.to_datetime(finance_data["Date"], errors="coerce")
 
-    # Add an index column for row identification
-    editable_data = finance_data.reset_index()  # Adds "index" column automatically
+    # Add an index column explicitly
+    editable_data = finance_data.reset_index(names="original_index")
 
     # Create grid options
     grid_options = GridOptionsBuilder.from_dataframe(editable_data)
@@ -35,7 +35,7 @@ def show_manage_data(finance_data, db_file):
     # Save changes button
     if st.button("💾 Save Changes"):
         # Remove the index column before saving
-        updated_data = updated_data.drop(columns=["index"], errors="ignore")
+        updated_data = updated_data.drop(columns=["original_index"], errors="ignore")
         finance_data = pd.DataFrame(updated_data)
         finance_data.to_csv(db_file, index=False)
 
@@ -46,21 +46,18 @@ def show_manage_data(finance_data, db_file):
     # Remove selected row button
     if st.button("❌ Remove Selected Row"):
         if len(selected_rows) > 0:  # Check if any row is selected
-            # Safely get the "index" column value of the selected row
-            row_to_delete = selected_rows[0].get("index")
+            # Retrieve the original index of the selected row
+            row_to_delete = selected_rows[0].get("original_index")
 
-            if row_to_delete is not None:  # Ensure "index" exists
-                # Drop the selected row
-                editable_data = editable_data[editable_data["index"] != row_to_delete].reset_index(drop=True)
-
-                # Remove the index column before updating session state
-                editable_data = editable_data.drop(columns=["index"], errors="ignore")
-                st.session_state["finance_data"] = editable_data
+            if row_to_delete is not None:  # Ensure the index exists
+                # Drop the row using the original index
+                finance_data = finance_data.drop(index=row_to_delete).reset_index(drop=True)
 
                 # Save changes to the file
-                editable_data.to_csv(db_file, index=False)
+                finance_data.to_csv(db_file, index=False)
 
-                # Notify user and refresh the grid
+                # Update session state and notify
+                st.session_state["finance_data"] = finance_data
                 st.success("Selected row removed successfully!")
             else:
                 st.warning("No valid row index found for deletion.")
