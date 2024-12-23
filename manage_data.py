@@ -50,19 +50,23 @@ def show_manage_data(finance_data, db_file):
     if st.button("❌ Remove Selected Row"):
         if selected_rows:
             # Get the index of the selected row
-            row_to_delete = selected_rows[0]["index"]
+            row_to_delete = selected_rows[0].get("index")
 
-            # Drop the selected row
-            editable_data = editable_data.drop(index=row_to_delete).reset_index(drop=True)
+            # Check if the row index exists in the data
+            if row_to_delete is not None and row_to_delete in editable_data.index:
+                # Drop the selected row
+                editable_data = editable_data.drop(index=row_to_delete).reset_index(drop=True)
 
-            # Remove the index column before updating session state
-            editable_data = editable_data.drop(columns=["index"], errors="ignore")
-            st.session_state["finance_data"] = editable_data
+                # Remove the index column before updating session state
+                editable_data = editable_data.drop(columns=["index"], errors="ignore")
+                st.session_state["finance_data"] = editable_data
 
-            # Save changes to the file
-            editable_data.to_csv(db_file, index=False)
+                # Save changes to the file
+                editable_data.to_csv(db_file, index=False)
 
-            # Notify user and refresh the grid
-            st.success("Selected row removed successfully!")
+                # Notify user and refresh the grid
+                st.success("Selected row removed successfully!")
+            else:
+                st.warning("Selected row not found in the current data.")
         else:
             st.warning("No row selected for deletion.")
