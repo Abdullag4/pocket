@@ -22,10 +22,22 @@ def load_data(file_path, columns):
         data.to_csv(file_path, index=False)
         return data
 
-# Initialize session state for data persistence
-if "finance_data" not in st.session_state:
-    st.session_state["finance_data"] = finance_data = load_data(DB_FILE, ["Date", "Category", "Amount", "Type", "Notes"])
+@st.cache_data
+def load_or_initialize_data(file_path, columns):
+    try:
+        return pd.read_csv(file_path)
+    except FileNotFoundError:
+        # Initialize with empty DataFrame with specified columns
+        data = pd.DataFrame(columns=columns)
+        data.to_csv(file_path, index=False)
+        return data
 
+if "finance_data" not in st.session_state:
+    st.session_state["finance_data"] = load_or_initialize_data(
+        DB_FILE, ["Date", "Category", "Amount", "Type", "Notes"]
+    )
+
+finance_data = st.session_state["finance_data"]
 if "debt_data" not in st.session_state:
     st.session_state["debt_data"] = load_data(
         DEBT_FILE, ["Type", "Name", "Amount", "Due Date", "Reason", "Status"]
