@@ -9,11 +9,8 @@ def show_manage_data(finance_data, db_file):
     if "Date" in finance_data.columns:
         finance_data["Date"] = pd.to_datetime(finance_data["Date"], errors="coerce")
 
-    # Create a copy of the DataFrame for editing
-    editable_data = finance_data.copy()
-
     # Add an index column for row identification
-    editable_data.reset_index(inplace=True)
+    editable_data = finance_data.reset_index()  # Adds "index" column automatically
 
     # Create grid options
     grid_options = GridOptionsBuilder.from_dataframe(editable_data)
@@ -49,13 +46,12 @@ def show_manage_data(finance_data, db_file):
     # Remove selected row button
     if st.button("❌ Remove Selected Row"):
         if len(selected_rows) > 0:  # Check if any row is selected
-            # Get the index of the selected row
+            # Safely get the "index" column value of the selected row
             row_to_delete = selected_rows[0].get("index")
 
-            # Check if the row index exists in the data
-            if row_to_delete is not None and row_to_delete in editable_data.index:
+            if row_to_delete is not None:  # Ensure "index" exists
                 # Drop the selected row
-                editable_data = editable_data.drop(index=row_to_delete).reset_index(drop=True)
+                editable_data = editable_data[editable_data["index"] != row_to_delete].reset_index(drop=True)
 
                 # Remove the index column before updating session state
                 editable_data = editable_data.drop(columns=["index"], errors="ignore")
@@ -67,6 +63,6 @@ def show_manage_data(finance_data, db_file):
                 # Notify user and refresh the grid
                 st.success("Selected row removed successfully!")
             else:
-                st.warning("Selected row not found in the current data.")
+                st.warning("No valid row index found for deletion.")
         else:
             st.warning("No row selected for deletion.")
