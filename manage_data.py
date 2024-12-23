@@ -30,14 +30,11 @@ def show_manage_data(finance_data, db_file):
     updated_data = grid_response["data"]
     updated_df = pd.DataFrame(updated_data)
 
-    # Show updated dataframe in the app
-    st.subheader("Updated Data Preview")
-    st.dataframe(updated_df)
-
     # Save changes
     if st.button("💾 Save Changes"):
         try:
             updated_df.to_csv(db_file, index=False)
+            st.session_state["finance_data"] = updated_df  # Sync with session state
             st.success("Changes saved successfully!")
         except Exception as e:
             st.error("Failed to save changes.")
@@ -54,6 +51,7 @@ def show_manage_data(finance_data, db_file):
             ]
             updated_df = updated_df.drop(indices_to_remove).reset_index(drop=True)
             updated_df.to_csv(db_file, index=False)
+            st.session_state["finance_data"] = updated_df  # Sync with session state
             st.success("Selected row removed successfully!")
             st.experimental_rerun()  # Refresh the app to show the updated data
         else:
