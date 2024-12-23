@@ -12,6 +12,9 @@ def show_manage_data(finance_data, db_file):
     # Create a copy of the DataFrame for editing
     editable_data = finance_data.copy()
 
+    # Add an index column for row identification
+    editable_data.reset_index(inplace=True)
+
     # Create grid options
     grid_options = GridOptionsBuilder.from_dataframe(editable_data)
     grid_options.configure_pagination(paginationAutoPageSize=True)
@@ -34,7 +37,8 @@ def show_manage_data(finance_data, db_file):
 
     # Save changes button
     if st.button("💾 Save Changes"):
-        # Save updated data to CSV
+        # Remove the index column before saving
+        updated_data = updated_data.drop(columns=["index"], errors="ignore")
         finance_data = pd.DataFrame(updated_data)
         finance_data.to_csv(db_file, index=False)
 
@@ -45,34 +49,20 @@ def show_manage_data(finance_data, db_file):
     # Remove selected row button
     if st.button("❌ Remove Selected Row"):
         if selected_rows:
-            # Find the index of the selected row
-            row_to_delete = selected_rows[0]
-            row_to_delete_index = editable_data.index[
-                (editable_data["Date"] == row_to_delete["Date"]) &
-                (editable_data["Category"] == row_to_delete["Category"]) &
-                (editable_data["Amount"] == row_to_delete["Amount"]) &
-                (editable_data["Notes"] == row_to_delete["Notes"]) &
-                (editable_data["Type"] == row_to_delete["Type"])
-            ].tolist()
+            # Get the index of the selected row
+            row_to_delete = selected_rows[0]["index"]
 
-            if row_to_delete_index:
-                # Drop the selected row(s)
-                editable_data = editable_data.drop(row_to_delete_index).reset_index(drop=True)
+            # Drop the selected row
+            editable_data = editable_data.drop(index=row_to_delete).reset_index(drop=True)
 
-                # Update session state and notify
-                st.session_state["finance_data"] = editable_data
-                st.success("Selected row removed successfully!")
+            # Remove the index column before updating session state
+            editable_data = editable_data.drop(columns=["index"], errors="ignore")
+            st.session_state["finance_data"] = editable_data
 
-                # Display the updated grid
-                AgGrid(
-                    editable_data,
-                    gridOptions=grid_options.build(),
-                    data_return_mode=DataReturnMode.FILTERED_AND_SORTED,
-                    update_mode=GridUpdateMode.MODEL_CHANGED,
-                    enable_enterprise_modules=False,
-                    height=400,
-                )
-            else:
-                st.warning("Row index could not be determined for deletion.")
+            # Save changes to the file
+            editable_data.to_csv(db_file, index=False)
+
+            # Notify user and refresh the grid
+            st.success("Selected row removed successfully!")
         else:
             st.warning("No row selected for deletion.")
