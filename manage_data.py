@@ -9,49 +9,69 @@ def show_manage_data(finance_data, db_file):
     if "Date" in finance_data.columns:
         finance_data["Date"] = pd.to_datetime(finance_data["Date"], errors="coerce")
 
-    # Display the current data in an editable grid
-    st.subheader("Edit or Remove Transactions")
+    # Create a copy of the DataFrame for editing
+    editable_data = finance_data.copy()
 
     # Create grid options
-    grid_options = GridOptionsBuilder.from_dataframe(finance_data)
+    grid_options = GridOptionsBuilder.from_dataframe(editable_data)
     grid_options.configure_pagination(paginationAutoPageSize=True)
     grid_options.configure_default_column(editable=True, wrapText=True)  # Enable editing
-    grid_options.configure_selection('single', use_checkbox=True)  # Single row selection with checkbox
+    grid_options.configure_selection('single', use_checkbox=True)  # Enable row selection with a checkbox
 
-    # Render AgGrid
+    # Render the grid
     grid_response = AgGrid(
-        finance_data,
+        editable_data,
         gridOptions=grid_options.build(),
         data_return_mode=DataReturnMode.FILTERED_AND_SORTED,
-        update_mode=GridUpdateMode.SELECTION_CHANGED,
+        update_mode=GridUpdateMode.MODEL_CHANGED,
         enable_enterprise_modules=False,
         height=400,
     )
 
-    # Capture the selected row(s)
+    # Get selected rows and the edited data
     selected_rows = grid_response["selected_rows"]
+    updated_data = grid_response["data"]
 
-    # Delete selected rows
+    # Save changes button
+    if st.button("💾 Save Changes"):
+        # Save updated data to CSV
+        finance_data = pd.DataFrame(updated_data)
+        finance_data.to_csv(db_file, index=False)
+
+        # Update session state and notify
+        st.session_state["finance_data"] = finance_data
+        st.success("Changes saved successfully!")
+
+    # Remove selected row button
     if st.button("❌ Remove Selected Row"):
         if selected_rows:
-            # Extract index of the selected row from the original DataFrame
-            row_to_delete = finance_data.index[
-                finance_data["Date"] == selected_rows[0]["Date"]
+            # Find the index of the selected row
+            row_to_delete = selected_rows[0]
+            row_to_delete_index = editable_data.index[
+                (editable_data["Date"] == row_to_delete["Date"]) &
+                (editable_data["Category"] == row_to_delete["Category"]) &
+                (editable_data["Amount"] == row_to_delete["Amount"]) &
+                (editable_data["Notes"] == row_to_delete["Notes"]) &
+                (editable_data["Type"] == row_to_delete["Type"])
             ].tolist()
 
-            if row_to_delete:
+            if row_to_delete_index:
                 # Drop the selected row(s)
-                finance_data = finance_data.drop(row_to_delete).reset_index(drop=True)
+                editable_data = editable_data.drop(row_to_delete_index).reset_index(drop=True)
 
-                # Save the updated data back to the file
-                finance_data.to_csv(db_file, index=False)
-
-                # Update session state and display success
-                st.session_state["finance_data"] = finance_data
+                # Update session state and notify
+                st.session_state["finance_data"] = editable_data
                 st.success("Selected row removed successfully!")
 
-                # Refresh the page to reflect the change
-                st.experimental_rerun()
+                # Display the updated grid
+                AgGrid(
+                    editable_data,
+                    gridOptions=grid_options.build(),
+                    data_return_mode=DataReturnMode.FILTERED_AND_SORTED,
+                    update_mode=GridUpdateMode.MODEL_CHANGED,
+                    enable_enterprise_modules=False,
+                    height=400,
+                )
             else:
                 st.warning("Row index could not be determined for deletion.")
         else:
