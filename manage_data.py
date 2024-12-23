@@ -48,7 +48,7 @@ def show_manage_data(finance_data, db_file):
 
     # Remove selected row button
     if st.button("❌ Remove Selected Row"):
-        if selected_rows:
+        if len(selected_rows) > 0:  # Check if any row is selected
             # Get the index of the selected row
             row_to_delete = selected_rows[0].get("index")
 
