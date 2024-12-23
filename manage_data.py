@@ -16,14 +16,14 @@ def show_manage_data(finance_data, db_file):
     grid_options = GridOptionsBuilder.from_dataframe(finance_data)
     grid_options.configure_pagination(paginationAutoPageSize=True)
     grid_options.configure_default_column(editable=True, wrapText=True)  # Enable editing
-    grid_options.configure_selection('single', use_checkbox=True)  # Allow single-row selection with checkbox
+    grid_options.configure_selection('single', use_checkbox=True)  # Single row selection with checkbox
 
     # Render AgGrid
     grid_response = AgGrid(
         finance_data,
         gridOptions=grid_options.build(),
         data_return_mode=DataReturnMode.FILTERED_AND_SORTED,
-        update_mode=GridUpdateMode.NO_UPDATE,
+        update_mode=GridUpdateMode.SELECTION_CHANGED,
         enable_enterprise_modules=False,
         height=400,
     )
@@ -34,24 +34,25 @@ def show_manage_data(finance_data, db_file):
     # Delete selected rows
     if st.button("❌ Remove Selected Row"):
         if selected_rows:
-            # Get the index of the selected row from the `_selectedRowNodeInfo`
-            row_indices = [
-                row["_selectedRowNodeInfo"]["rowIndex"]
-                for row in selected_rows
-                if "_selectedRowNodeInfo" in row
-            ]
+            # Extract index of the selected row from the original DataFrame
+            row_to_delete = finance_data.index[
+                finance_data["Date"] == selected_rows[0]["Date"]
+            ].tolist()
 
-            # Drop the selected rows from the DataFrame
-            updated_data = finance_data.drop(index=row_indices).reset_index(drop=True)
+            if row_to_delete:
+                # Drop the selected row(s)
+                finance_data = finance_data.drop(row_to_delete).reset_index(drop=True)
 
-            # Save the updated data back to the file
-            updated_data.to_csv(db_file, index=False)
+                # Save the updated data back to the file
+                finance_data.to_csv(db_file, index=False)
 
-            # Update session state and display success
-            st.session_state["finance_data"] = updated_data
-            st.success("Selected row(s) removed successfully!")
+                # Update session state and display success
+                st.session_state["finance_data"] = finance_data
+                st.success("Selected row removed successfully!")
 
-            # Refresh the page to reflect the change
-            st.experimental_rerun()
+                # Refresh the page to reflect the change
+                st.experimental_rerun()
+            else:
+                st.warning("Row index could not be determined for deletion.")
         else:
             st.warning("No row selected for deletion.")
