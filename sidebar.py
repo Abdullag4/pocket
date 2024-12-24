@@ -27,7 +27,7 @@ def show_sidebar(finance_data):
         # Navigation menu
         selected = option_menu(
             menu_title="Navigation",
-            options=["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "Manage Data", "⚙️ Settings", "💳 Debt Management"],
+            options=["Overview", "Add Expense", "Add Income", "Analyze", "Manage Data", "Settings", "Debt Management"],
             icons=["house", "plus-circle", "plus-circle", "bar-chart", "table", "gear", "credit-card"],
             menu_icon="list",
             default_index=0,
