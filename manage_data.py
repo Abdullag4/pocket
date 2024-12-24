@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-from st_aggrid import AgGrid, GridOptionsBuilder, DataReturnMode, GridUpdateMode
 
 def show_manage_data(finance_data, db_file):
     st.title("Manage Data")
@@ -9,54 +8,50 @@ def show_manage_data(finance_data, db_file):
     if "Date" in finance_data.columns:
         finance_data["Date"] = pd.to_datetime(finance_data["Date"], errors="coerce")
 
-    # Add an explicit index column for row identification
-    finance_data_with_index = finance_data.reset_index()  # Adds a column named "index"
-    
-    # Create grid options
-    grid_options = GridOptionsBuilder.from_dataframe(finance_data_with_index)
-    grid_options.configure_pagination(paginationAutoPageSize=True)
-    grid_options.configure_default_column(editable=True, wrapText=True)  # Enable editing
-    grid_options.configure_selection('single', use_checkbox=True)  # Enable row selection with a checkbox
+    # Display current data as a table
+    st.subheader("Current Data")
+    st.dataframe(finance_data)
 
-    # Render the grid
-    grid_response = AgGrid(
-        finance_data_with_index,
-        gridOptions=grid_options.build(),
-        data_return_mode=DataReturnMode.FILTERED_AND_SORTED,
-        update_mode=GridUpdateMode.MODEL_CHANGED,
-        enable_enterprise_modules=False,
-        height=400,
+    # Dropdown to select a row to delete based on a unique column or content
+    st.subheader("Delete a Row")
+    row_options = [
+        f"{index}: {row['Date']} - {row['Category']} - {row['Amount']}"
+        for index, row in finance_data.iterrows()
+    ]
+    
+    selected_row = st.selectbox(
+        "Select a row to delete:", 
+        options=row_options if row_options else ["No rows available"],
     )
 
-    # Get selected rows and the edited data
-    selected_rows = grid_response["selected_rows"]
-    updated_data = grid_response["data"]
+    # Confirm deletion
+    if st.button("❌ Delete Selected Row"):
+        if "No rows available" in row_options:
+            st.warning("No rows to delete!")
+        else:
+            # Extract the row index from the selected option
+            row_index = int(selected_row.split(":")[0])
 
-    # Save changes button
-    if st.button("💾 Save Changes"):
-        # Remove the "index" column before saving
-        updated_data = updated_data.drop(columns=["index"], errors="ignore")
-        finance_data = pd.DataFrame(updated_data)
-        finance_data.to_csv(db_file, index=False)
+            # Delete the row
+            finance_data = finance_data.drop(index=row_index).reset_index(drop=True)
 
-        # Update session state and notify
-        st.session_state["finance_data"] = finance_data
-        st.success("Changes saved successfully!")
-
-    # Remove selected row button
-    if st.button("❌ Remove Selected Row"):
-        if len(selected_rows) > 0:  # Check if any row is selected
-            # Retrieve the original index of the selected row
-            row_to_delete = selected_rows[0]["index"]  # Access "index" column added earlier
-
-            # Drop the row using the original index
-            finance_data = finance_data.drop(index=row_to_delete).reset_index(drop=True)
-
-            # Save changes to the file
+            # Save updated data to file
             finance_data.to_csv(db_file, index=False)
 
-            # Update session state and notify
+            # Update session state
             st.session_state["finance_data"] = finance_data
-            st.success("Selected row removed successfully!")
-        else:
-            st.warning("No row selected for deletion.")
+
+            st.success("Selected row deleted successfully!")
+
+    # Save changes after editing
+    st.subheader("Edit Data")
+    updated_data = st.experimental_data_editor(finance_data, use_container_width=True)
+
+    if st.button("💾 Save Changes"):
+        # Save the edited data
+        updated_data.to_csv(db_file, index=False)
+
+        # Update session state
+        st.session_state["finance_data"] = updated_data
+
+        st.success("Changes saved successfully!")
