@@ -1,45 +1,37 @@
 import streamlit as st
+from streamlit_option_menu import option_menu
 
 def show_sidebar(finance_data):
     """
-    Creates a sidebar navigation menu and displays a financial summary.
+    Creates a sidebar navigation menu with financial summary.
 
     Args:
-        finance_data (DataFrame): The DataFrame containing financial data.
+        finance_data (pd.DataFrame): The finance data to calculate the summary.
 
     Returns:
         str: The selected menu option.
     """
-    # Set the title for the sidebar
-    st.sidebar.title("Navigation")
+    with st.sidebar:
+        # Sidebar header
+        st.title("📊 Financial Summary")
 
-    # Ensure session state for the menu persists
-    if "menu" not in st.session_state:
-        st.session_state.menu = "Overview"  # Default option
-
-    # Sidebar selectbox to navigate between options
-    menu = st.sidebar.selectbox(
-        "Choose an option",
-        ["Overview", "Add Expense", "Add Income", "Settings", "Manage Data"],
-        index=["Overview", "Add Expense", "Add Income", "Settings", "Manage Data"].index(st.session_state.menu),
-    )
-
-    # Update the session state to reflect the current selection
-    st.session_state.menu = menu
-
-    # Financial Summary
-    st.sidebar.subheader("Financial Summary")
-
-    if not finance_data.empty:
+        # Calculate and display financial summary
         total_income = finance_data[finance_data["Type"] == "Income"]["Amount"].sum()
         total_expense = finance_data[finance_data["Type"] == "Expense"]["Amount"].sum()
-        balance = total_income - total_expense
+        net_balance = total_income - total_expense
 
-        st.sidebar.metric("Total Income", f"${total_income:,.2f}")
-        st.sidebar.metric("Total Expense", f"${total_expense:,.2f}")
-        st.sidebar.metric("Balance", f"${balance:,.2f}")
-    else:
-        st.sidebar.info("No financial data available.")
+        st.metric("💰 Total Income", f"${total_income:,.2f}")
+        st.metric("💸 Total Expense", f"${total_expense:,.2f}")
+        st.metric("🧾 Net Balance", f"${net_balance:,.2f}")
 
-    # Return the selected menu option
-    return menu
+        # Navigation menu
+        selected = option_menu(
+            menu_title="Navigation",
+            options=["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "Manage Data", "⚙️ Settings", "💳 Debt Management"],
+            icons=["house", "plus-circle", "plus-circle", "bar-chart", "table", "gear", "credit-card"],
+            menu_icon="list",
+            default_index=0,
+            orientation="vertical",
+        )
+
+    return selected
