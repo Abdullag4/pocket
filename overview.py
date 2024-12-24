@@ -1,35 +1,43 @@
 import streamlit as st
-from st_aggrid import AgGrid, GridOptionsBuilder
 import pandas as pd
 
 def show_overview(finance_data):
-    st.markdown('<div class="section-title">Overview</div>', unsafe_allow_html=True)
+    st.title("💼 Financial Overview")
 
-    if finance_data.empty:
-        st.info("No data available. Start adding expenses and incomes.")
-    else:
-        # Ensure the Date column is properly formatted
-        if "Date" in finance_data.columns:
-            finance_data["Date"] = pd.to_datetime(finance_data["Date"], errors="coerce")
+    # Summary Statistics
+    total_income = finance_data[finance_data["Type"] == "Income"]["Amount"].sum()
+    total_expense = finance_data[finance_data["Type"] == "Expense"]["Amount"].sum()
+    balance = total_income - total_expense
 
-        st.subheader("📋 All Transactions")
-        
-        # Use AgGrid for displaying transactions with custom options
-        grid_options = GridOptionsBuilder.from_dataframe(finance_data)
-        grid_options.configure_pagination(paginationAutoPageSize=True)
-        grid_options.configure_default_column(wrapText=True, autoHeight=True)
-        grid_options.configure_column("Amount", type=["numericColumn"], precision=2)
-        grid_options.configure_column("Date", type=["dateColumn", "customDateTimeFormat"], custom_format_string="yyyy-MM-dd")
-        AgGrid(finance_data, gridOptions=grid_options.build(), height=400)
+    st.metric("Total Income", f"${total_income:.2f}")
+    st.metric("Total Expense", f"${total_expense:.2f}")
+    st.metric("Balance", f"${balance:.2f}")
 
-    # Calculate Metrics
-    total_income = finance_data.loc[finance_data['Type'] == "Income", "Amount"].sum()
-    total_expenses = finance_data.loc[finance_data['Type'] == "Expense", "Amount"].sum()
-    net_balance = total_income - total_expenses
+    # Budget Tips
+    st.subheader("💡 Budget Tips")
+    if total_income > 0:
+        needs_limit = total_income * 0.50  # 50% for needs
+        wants_limit = total_income * 0.30  # 30% for wants
+        savings_target = total_income * 0.20  # 20% for savings
 
-    # Display Metrics
-    st.subheader("💹 Financial Summary")
-    col1, col2, col3 = st.columns(3)
-    col1.metric(label="💰 Total Income", value=f"${total_income:,.2f}")
-    col2.metric(label="💸 Total Expenses", value=f"${total_expenses:,.2f}")
-    col3.metric(label="📊 Net Balance", value=f"${net_balance:,.2f}")
+        # Calculate spending in each category
+        needs_expense = finance_data[finance_data["Category"] == "Needs"]["Amount"].sum()
+        wants_expense = finance_data[finance_data["Category"] == "Wants"]["Amount"].sum()
+
+        if needs_expense > needs_limit:
+            st.warning(f"You're spending more on 'Needs' (${needs_expense:.2f}) than recommended (${needs_limit:.2f}). Consider cutting back.")
+        if wants_expense > wants_limit:
+            st.warning(f"You're spending more on 'Wants' (${wants_expense:.2f}) than recommended (${wants_limit:.2f}). Reassess non-essential expenses.")
+        if balance < savings_target:
+            st.info(f"You're saving less than the recommended 20%. Aim to save at least ${savings_target:.2f}.")
+
+    # Show spending chart
+    if not finance_data.empty:
+        st.subheader("📊 Spending by Category")
+        category_expense = finance_data[finance_data["Type"] == "Expense"].groupby("Category")["Amount"].sum()
+        st.bar_chart(category_expense)
+
+    # Notify if overspending
+    st.subheader("🚨 Alerts")
+    if balance < 0:
+        st.error("You're overspending and your balance is negative! Adjust your expenses immediately.")
