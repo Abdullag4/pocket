@@ -8,6 +8,7 @@ from analyze import show_analysis
 from theme import configure_theme  # Global Theme Configuration
 from manage_data import show_manage_data  # For managing data
 from debts import show_debt_page  # For debt management
+from sidebar import show_sidebar  # Updated sidebar function
 
 # File paths
 DB_FILE = "finance_data.csv"
@@ -34,13 +35,8 @@ if "debt_data" not in st.session_state:
 # Apply global theme configuration
 configure_theme()
 
-# Sidebar navigation
-st.sidebar.title("📊 Navigation")
-page = st.sidebar.radio(
-    "Choose a section:",
-    ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "Manage Data", "⚙️ Settings", "💳 Debt Management"]
-)
-selected_menu = show_sidebar(st.session_state["finance_data"])
+# Sidebar navigation with financial summary
+page = show_sidebar(st.session_state["finance_data"])  # Pass finance_data to the sidebar function
 
 # Page routing
 if page == "🏠 Overview":
