@@ -23,6 +23,6 @@ def show_sidebar(finance_data):
     # Navigation
     menu = st.sidebar.radio(
         "Choose a section:",
-        ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "Manage Data", "⚙️ Settings", "💳 Debt Management"]
+        ["Overview", "Add Expense", "Add Income", "Analyze", "Manage Data", "Settings", "Debt Management"]
     )
     return menu
