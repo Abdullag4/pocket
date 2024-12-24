@@ -39,7 +39,7 @@ configure_theme()
 page = show_sidebar(st.session_state["finance_data"])  # Pass finance_data to the sidebar function
 
 # Page routing
-if page == "🏠 Overview":
+if page == "Overview":
     show_overview(st.session_state["finance_data"])
 elif page == "Add Expense":
     st.session_state["finance_data"] = show_add_expense(st.session_state["finance_data"], DB_FILE)
