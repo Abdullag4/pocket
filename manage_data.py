@@ -8,9 +8,21 @@ def show_manage_data(finance_data, db_file):
     if "Date" in finance_data.columns:
         finance_data["Date"] = pd.to_datetime(finance_data["Date"], errors="coerce")
 
-    # Display current data as a table
-    st.subheader("Current Data")
-    editable_data = finance_data.copy()
+    # Display the current data in an editable grid
+    st.subheader("Edit or Remove Transactions")
+
+    grid_options = GridOptionsBuilder.from_dataframe(finance_data)
+    grid_options.configure_pagination(paginationAutoPageSize=True)
+    grid_options.configure_default_column(editable=True, wrapText=True)  # Enable editing
+    grid_options.configure_selection('single', use_checkbox=True)  # Allow selecting rows
+
+    grid_response = AgGrid(
+        finance_data,
+        gridOptions=grid_options.build(),
+        data_return_mode=DataReturnMode.FILTERED_AND_SORTED,
+        update_mode=GridUpdateMode.VALUE_CHANGED,
+        enable_enterprise_modules=False,
+        height=400,
 
     # Editable table
     updated_data = grid_response["data"]
