@@ -13,7 +13,8 @@ def show_manage_data(finance_data, db_file):
     editable_data = finance_data.copy()
 
     # Editable table
-    edited_data = st.dataframe(editable_data, use_container_width=True)
+    updated_data = grid_response["data"]
+    updated_df = pd.DataFrame(updated_data)
 
     # Save changes button
     if st.button("💾 Save Changes"):
