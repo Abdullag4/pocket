@@ -40,6 +40,7 @@ page = st.sidebar.radio(
     "Choose a section:",
     ["🏠 Overview", "➕ Add Expense", "➕ Add Income", "📈 Analyze", "Manage Data", "⚙️ Settings", "💳 Debt Management"]
 )
+selected_menu = show_sidebar(st.session_state["finance_data"])
 
 # Page routing
 if page == "🏠 Overview":
