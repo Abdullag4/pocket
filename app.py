@@ -39,17 +39,17 @@ configure_theme()
 page = show_sidebar(st.session_state["finance_data"])  # Pass finance_data to the sidebar function
 
 # Page routing
-if page == "🏠 Overview":
+if page == "Overview":
     show_overview(st.session_state["finance_data"])
-elif page == "➕ Add Expense":
+elif page == "Add Expense":
     st.session_state["finance_data"] = show_add_expense(st.session_state["finance_data"], DB_FILE)
-elif page == "➕ Add Income":
+elif page == "Add Income":
     st.session_state["finance_data"] = show_add_income(st.session_state["finance_data"], DB_FILE)
-elif page == "📈 Analyze":
+elif page == "Analyze":
     show_analysis(st.session_state["finance_data"])
 elif page == "Manage Data":
     show_manage_data(st.session_state["finance_data"], DB_FILE)
-elif page == "⚙️ Settings":
+elif page == "Settings":
     show_settings(st.session_state["finance_data"], DB_FILE)
-elif page == "💳 Debt Management":
+elif page == "Debt Management":
     show_debt_page(st.session_state["debt_data"], DEBT_FILE)
