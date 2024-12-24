@@ -4,3 +4,4 @@ PyGithub
 matplotlib
 streamlit-aggrid
 plotly
+streamlit-option-menu
