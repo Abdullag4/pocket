@@ -3,25 +3,6 @@ from st_aggrid import AgGrid, GridOptionsBuilder
 import pandas as pd
 
 def show_overview(finance_data):
-    settings = load_settings()
-    total_income = finance_data[finance_data["Type"] == "Income"]["Amount"].sum()
-    st.title("💼 Financial Overview")
-
-    # Grade-based spending calculation
-    st.subheader("🚦 Spending by Grade")
-    for grade, percentage in settings["grades"].items():
-        grade_limit = total_income * (percentage / 100)
-        grade_expense = finance_data[
-            finance_data["Category"].isin(
-                [cat for cat, g in settings["categories"].items() if g == grade]
-            )
-        ]["Amount"].sum()
-
-        st.metric(f"{grade} Spending", f"${grade_expense:.2f}", f"Limit: ${grade_limit:.2f}")
-        if grade_expense > grade_limit:
-            st.warning(f"⚠️ You're overspending on '{grade}' categories!")
-
-def show_overview(finance_data):
     st.markdown('<div class="section-title">Overview</div>', unsafe_allow_html=True)
 
     if finance_data.empty:
