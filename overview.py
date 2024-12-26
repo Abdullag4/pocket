@@ -6,12 +6,13 @@ import os
 
 SETTINGS_FILE = "expense_settings.json"
 
+# Load classification settings
 def load_settings():
     if os.path.exists(SETTINGS_FILE):
         with open(SETTINGS_FILE, "r") as file:
             return json.load(file)
     else:
-        # Default settings in case the settings file is not available
+        # Default fallback settings if file doesn't exist
         return {
             "grades": {
                 "Most to Do": 50,
@@ -19,7 +20,7 @@ def load_settings():
                 "Nice to Do": 15,
                 "Saving Target": 5,
             },
-            "categories": {},
+            "categories": {}
         }
 
 def show_overview(finance_data):
@@ -54,38 +55,37 @@ def show_overview(finance_data):
     col2.metric(label="💸 Total Expenses", value=f"${total_expenses:,.2f}")
     col3.metric(label="📊 Net Balance", value=f"${net_balance:,.2f}")
 
-    # Load settings for grade-based spending
+    # Load settings for classifications
     settings = load_settings()
-    st.subheader("🚦 Spending by Grade")
-    for grade, percentage in settings["grades"].items():
-        grade_limit = total_income * (percentage / 100)
-        grade_categories = [
-            cat for cat, g in settings["categories"].items() if g == grade
-        ]
-        grade_expense = finance_data[
-            finance_data["Category"].isin(grade_categories)
-        ]["Amount"].sum() if grade_categories else 0.0
 
-        st.metric(
-            f"{grade} Spending",
-            f"${grade_expense:,.2f}",
-            f"Limit: ${grade_limit:,.2f}",
-        )
-        if grade_expense > grade_limit:
-            st.warning(f"⚠️ You're overspending on '{grade}' categories!")
+    # Classification-based expense summary
+    if "categories" in settings and "grades" in settings:
+        st.subheader("📊 Expense Breakdown by Classification")
 
-    # Display recommendations based on spending
-    st.subheader("📝 Recommendations")
-    for grade, percentage in settings["grades"].items():
-        grade_limit = total_income * (percentage / 100)
-        grade_categories = [
-            cat for cat, g in settings["categories"].items() if g == grade
-        ]
-        grade_expense = finance_data[
-            finance_data["Category"].isin(grade_categories)
-        ]["Amount"].sum() if grade_categories else 0.0
+        # Filter expense rows
+        expense_data = finance_data[finance_data['Type'] == "Expense"]
 
-        if grade_expense > grade_limit:
-            st.write(f"- Reduce spending on '{grade}' categories such as {', '.join(grade_categories)}.")
-        elif grade == "Saving Target" and grade_expense < grade_limit:
-            st.write("- Increase contributions to your savings targets to meet your goals!")
+        # Summarize expenses by classification
+        classified_expenses = {grade: 0 for grade in settings["grades"]}
+        for _, row in expense_data.iterrows():
+            category = row.get("Category", "Unclassified")
+            classification = settings["categories"].get(category, "Unclassified")
+            if classification in classified_expenses:
+                classified_expenses[classification] += row["Amount"]
+
+        # Display classification summary
+        for grade, percentage in settings["grades"].items():
+            allocated_budget = (percentage / 100) * total_income
+            spent = classified_expenses.get(grade, 0)
+            remaining = allocated_budget - spent
+
+            st.markdown(
+                f"### {grade}: {spent:,.2f} spent, "
+                f"budgeted {allocated_budget:,.2f} "
+                f"(remaining {remaining:,.2f})"
+            )
+
+            if remaining < 0:
+                st.warning(f"⚠️ You've overspent on {grade} by {-remaining:,.2f}.")
+            elif remaining > 0:
+                st.info(f"✅ You have {remaining:,.2f} left in your {grade} budget.")
