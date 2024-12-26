@@ -6,7 +6,7 @@ def show_add_expense(finance_data, db_file):
 
     # Input fields for adding expense
     date = st.date_input("Date")
-    category = st.selectbox("Category", ["Food", "Transport", "Rent", "Clothes", "Resturants", "Travel & picnic", "Utilities", "Others"])
+    category = st.selectbox("Category", ["Food", "Transport", "Rent", "Clothes", "Restaurants", "Travel & picnic", "Utilities", "Others"])
     amount = st.number_input("Amount", min_value=0.0, step=0.01)
     notes = st.text_area("Notes")
 
