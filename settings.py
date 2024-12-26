@@ -3,29 +3,23 @@ import json
 import os
 
 SETTINGS_FILE = "expense_settings.json"
-
-# Default Settings
-DEFAULT_SETTINGS = {
-    "grades": {
-        "Most to Do": 50,
-        "Good to Do": 30,
-        "Nice to Do": 15,
-        "Saving Target": 5,
-    },
-    "categories": {
-        "Food": "Most to Do",
-        "Rent": "Most to Do",
-        "Transport": "Good to Do",
-        "Utilities": "Good to Do",
-    },
-}
+EXPENSE_CATEGORIES = ["Food", "Transport", "Rent", "Clothes", "Restaurants", "Travel & picnic", "Utilities", "Others"]
 
 def load_settings():
     if os.path.exists(SETTINGS_FILE):
         with open(SETTINGS_FILE, "r") as file:
             return json.load(file)
     else:
-        return DEFAULT_SETTINGS
+        # Default settings in case the settings file is not available
+        return {
+            "grades": {
+                "Most to Do": 50,
+                "Good to Do": 30,
+                "Nice to Do": 15,
+                "Saving Target": 5,
+            },
+            "categories": {category: "Unclassified" for category in EXPENSE_CATEGORIES},
+        }
 
 def save_settings(settings):
     with open(SETTINGS_FILE, "w") as file:
@@ -33,32 +27,39 @@ def save_settings(settings):
 
 def show_settings(finance_data, db_file):
     st.title("⚙️ Settings")
-
+    st.subheader("💡 Expense Classification Settings")
+    
     # Load current settings
     settings = load_settings()
 
-    # Grade Percentage Settings
-    st.subheader("🛠️ Configure Grade Percentages")
-    for grade, percentage in settings["grades"].items():
-        new_percentage = st.slider(f"{grade} (%)", 0, 100, percentage)
-        settings["grades"][grade] = new_percentage
-
-    # Category Classification
-    st.subheader("📂 Classify Expense Categories")
-    categories = finance_data["Category"].unique() if not finance_data.empty else []
-    for category in categories:
-        grade = st.selectbox(
-            f"Assign grade to {category}:",
-            list(settings["grades"].keys()),
-            index=list(settings["grades"].keys()).index(
-                settings["categories"].get(category, "Nice to Do")
-            )
-            if category in settings["categories"]
-            else 0,
+    # Display grade percentage allocation
+    st.subheader("🚦 Grade Percentage Allocation")
+    for grade in settings["grades"]:
+        settings["grades"][grade] = st.slider(
+            f"{grade} Percentage",
+            min_value=0,
+            max_value=100,
+            value=settings["grades"][grade],
+            step=1,
         )
-        settings["categories"][category] = grade
 
-    # Save Button
+    # Normalize percentages to 100% (optional)
+    total_percentage = sum(settings["grades"].values())
+    if total_percentage != 100:
+        st.warning(f"The total percentage is {total_percentage}%. Adjust to make it exactly 100%.")
+
+    # Display and edit expense category classifications
+    st.subheader("🗂️ Classify Expense Categories")
+    for category in EXPENSE_CATEGORIES:
+        settings["categories"][category] = st.selectbox(
+            f"Classify {category}",
+            options=["Most to Do", "Good to Do", "Nice to Do", "Saving Target", "Unclassified"],
+            index=["Most to Do", "Good to Do", "Nice to Do", "Saving Target", "Unclassified"].index(
+                settings["categories"].get(category, "Unclassified")
+            ),
+        )
+
+    # Save button
     if st.button("Save Settings"):
         save_settings(settings)
         st.success("Settings saved successfully!")
