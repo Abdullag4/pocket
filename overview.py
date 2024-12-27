@@ -85,7 +85,16 @@ def show_overview(finance_data):
                 f"(remaining {remaining:,.2f})"
             )
 
-            if remaining < 0:
+            if grade == "Saving Target":
+                # Calculate savings
+                savings = net_balance  # Remaining balance after all spending
+                savings_target = (percentage / 100) * total_income
+                if savings < savings_target:
+                    st.error(f"⚠️ Savings below target! You saved {savings:,.2f}, target is {savings_target:,.2f}.")
+                else:
+                    st.success(f"✅ You saved {savings:,.2f}, exceeding the target of {savings_target:,.2f}.")
+
+            elif remaining < 0:
                 st.warning(f"⚠️ You've overspent on {grade} by {-remaining:,.2f}.")
             elif remaining > 0:
                 st.info(f"✅ You have {remaining:,.2f} left in your {grade} budget.")
