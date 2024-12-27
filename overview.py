@@ -12,7 +12,7 @@ def show_overview(finance_data):
         st.info(_("no_data"))
     else:
         st.subheader(_("all_transactions"))
-        # Other parts of the app
+        # Add the rest of the logic here, replacing hardcoded strings with _()
 
 SETTINGS_FILE = "expense_settings.json"
 
