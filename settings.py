@@ -69,7 +69,7 @@ def show_settings(finance_data, db_file):
         st.experimental_set_query_params(language_changed="true")
 
     # Check query parameters for language change
-    if st.experimental_get_query_params().get("language_changed"):
+    if st.query_params.get("language_changed"):
         st.success(_("Language changed successfully. Reloading..."))
         st.experimental_set_query_params()  # Clear the query parameter
         return  # Exit to allow the app to rerun cleanly
