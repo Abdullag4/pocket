@@ -85,7 +85,7 @@ def show_overview(finance_data):
                 f"(remaining {remaining:,.2f})"
             )
 
-            if grade == "Saving Target":
+if grade == "Saving Target":
     # Calculate savings
     savings = net_balance  # Remaining balance after all spending
     savings_target = (percentage / 100) * total_income
