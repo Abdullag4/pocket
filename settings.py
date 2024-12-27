@@ -3,7 +3,7 @@ import json
 import os
 
 SETTINGS_FILE = "expense_settings.json"
-EXPENSE_CATEGORIES = ["Food", "Transport", "Rent", "Clothes", "sports", "Restaurants", "Travel & picnic", "Utilities", "Others"]
+EXPENSE_CATEGORIES = ["Food", "Transport", "Rent", "Clothes", "Restaurants", "Travel & picnic", "Utilities", "Others"]
 
 def load_settings():
     if os.path.exists(SETTINGS_FILE):
