@@ -16,21 +16,27 @@ EXPENSE_CATEGORIES = [
 ]
 
 def load_settings():
+    default_settings = {
+        "grades": {
+            _("Most to Do"): 50,
+            _("Good to Do"): 30,
+            _("Nice to Do"): 15,
+            _("Saving Target"): 5,
+        },
+        "categories": {category: _("Unclassified") for category in EXPENSE_CATEGORIES},
+        "language": "en",  # Default language
+    }
+
     if os.path.exists(SETTINGS_FILE):
         with open(SETTINGS_FILE, "r") as file:
-            return json.load(file)
+            loaded_settings = json.load(file)
+            # Ensure default keys exist in loaded settings
+            for key, value in default_settings.items():
+                if key not in loaded_settings:
+                    loaded_settings[key] = value
+            return loaded_settings
     else:
-        # Default settings in case the settings file is not available
-        return {
-            "grades": {
-                _("Most to Do"): 50,
-                _("Good to Do"): 30,
-                _("Nice to Do"): 15,
-                _("Saving Target"): 5,
-            },
-            "categories": {category: _("Unclassified") for category in EXPENSE_CATEGORIES},
-            "language": "en"
-        }
+        return default_settings
 
 def save_settings(settings):
     with open(SETTINGS_FILE, "w") as file:
