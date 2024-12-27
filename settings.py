@@ -72,7 +72,7 @@ def show_settings(finance_data, db_file):
     query_params = st.query_params
     if query_params.get("language_changed"):
         st.success(_("Language changed successfully. Reloading..."))
-        st.set_query_params()  # Clear the query parameter
+        st.set_query_params(**{})  # Clear the query parameter
         return  # Exit to allow the app to rerun cleanly
 
     # Display grade percentage allocation
