@@ -66,12 +66,13 @@ def show_settings(finance_data, db_file):
         set_language(language)
 
         # Trigger a Streamlit rerun using a success message
-        st.experimental_set_query_params(language_changed="true")
+        st.set_query_params(language_changed="true")
 
     # Check query parameters for language change
-    if st.query_params.get("language_changed"):
+    query_params = st.query_params
+    if query_params.get("language_changed"):
         st.success(_("Language changed successfully. Reloading..."))
-        st.experimental_set_query_params()  # Clear the query parameter
+        st.set_query_params()  # Clear the query parameter
         return  # Exit to allow the app to rerun cleanly
 
     # Display grade percentage allocation
