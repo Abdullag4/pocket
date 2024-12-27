@@ -9,6 +9,7 @@ from theme import configure_theme  # Global Theme Configuration
 from manage_data import show_manage_data  # For managing data
 from debts import show_debt_page  # For debt management
 from sidebar import show_sidebar  # Updated sidebar function
+from localization import set_language, _  # Localization
 
 # File paths
 DB_FILE = "finance_data.csv"
