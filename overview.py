@@ -3,6 +3,16 @@ from st_aggrid import AgGrid, GridOptionsBuilder
 import pandas as pd
 import json
 import os
+from localization import _
+
+def show_overview(finance_data):
+    st.markdown(f'<div class="section-title">{_("overview")}</div>', unsafe_allow_html=True)
+
+    if finance_data.empty:
+        st.info(_("no_data"))
+    else:
+        st.subheader(_("all_transactions"))
+        # Other parts of the app
 
 SETTINGS_FILE = "expense_settings.json"
 
