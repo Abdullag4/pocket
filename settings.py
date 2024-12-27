@@ -31,6 +31,7 @@ def show_settings(finance_data, db_file):
     
     # Load current settings
     settings = load_settings()
+    
  # Language Settings
     st.subheader(_("🌐 Language Settings"))
     language = st.radio(
