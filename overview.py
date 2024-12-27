@@ -79,25 +79,30 @@ def show_overview(finance_data):
             spent = classified_expenses.get(grade, 0)
             remaining = allocated_budget - spent
 
-            st.markdown(
-                f"### {grade}: {spent:,.2f} spent, "
-                f"budgeted {allocated_budget:,.2f} "
-                f"(remaining {remaining:,.2f})"
-            )
+            if grade == "Saving Target":
+                # Calculate savings
+                savings = net_balance  # Remaining balance after all spending
+                savings_target = (percentage / 100) * total_income
+                remaining_tolerance = savings_target - savings
 
-if grade == "Saving Target":
-    # Calculate savings
-    savings = net_balance  # Remaining balance after all spending
-    savings_target = (percentage / 100) * total_income
-    remaining_tolerance = savings_target - savings
+                if savings < savings_target:
+                    st.error(
+                        f"⚠️ {savings:,.2f} saved, target {savings_target:,.2f} "
+                        f"(remaining tolerance {remaining_tolerance:,.2f})."
+                    )
+                else:
+                    st.success(
+                        f"✅ {savings:,.2f} saved, target {savings_target:,.2f} "
+                        f"(exceeding target by {abs(remaining_tolerance):,.2f})."
+                    )
+            else:
+                st.markdown(
+                    f"### {grade}: {spent:,.2f} spent, "
+                    f"budgeted {allocated_budget:,.2f} "
+                    f"(remaining {remaining:,.2f})"
+                )
 
-    if savings < savings_target:
-        st.error(
-            f"⚠️ {savings:,.2f} saved, target {savings_target:,.2f} "
-            f"(remaining tolerance {remaining_tolerance:,.2f})."
-        )
-    else:
-        st.success(
-            f"✅ {savings:,.2f} saved, target {savings_target:,.2f} "
-            f"(exceeding target by {abs(remaining_tolerance):,.2f})."
-        )
+                if remaining < 0:
+                    st.warning(f"⚠️ You've overspent on {grade} by {-remaining:,.2f}.")
+                elif remaining > 0:
+                    st.info(f"✅ You have {remaining:,.2f} left in your {grade} budget.")
