@@ -1,6 +1,18 @@
 import streamlit as st
 import json
 import os
+from localization import set_language, _
+
+def show_settings():
+    st.title(_("Settings"))
+
+    # Language Selection
+    language = st.selectbox(_("Choose Language"), ["en", "ku"], index=0)
+    if "language" not in st.session_state or st.session_state.language != language:
+        st.session_state.language = language
+        set_language(language)
+    
+    st.success(_("Language updated successfully!"))
 
 SETTINGS_FILE = "expense_settings.json"
 EXPENSE_CATEGORIES = ["Food", "Transport", "Rent", "Clothes", "Restaurants", "Travel & picnic", "Utilities", "Others"]
