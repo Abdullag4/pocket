@@ -31,7 +31,19 @@ def show_settings(finance_data, db_file):
     
     # Load current settings
     settings = load_settings()
-
+ # Language Settings
+    st.subheader(_("🌐 Language Settings"))
+    language = st.radio(
+        _("Select Application Language"),
+        options=["en", "ku"],
+        index=0 if settings["language"] == "en" else 1,
+        format_func=lambda lang: _("English") if lang == "en" else _("Kurdish")
+    )
+    if language != settings["language"]:
+        settings["language"] = language
+        set_language(language)
+        st.experimental_rerun()  # Restart the app to apply changes
+        
     # Display grade percentage allocation
     st.subheader("🚦 Grade Percentage Allocation")
     for grade in settings["grades"]:
