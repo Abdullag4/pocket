@@ -18,12 +18,12 @@ EXPENSE_CATEGORIES = [
 def load_settings():
     default_settings = {
         "grades": {
-            _("Most to Do"): 50,
-            _("Good to Do"): 30,
-            _("Nice to Do"): 15,
-            _("Saving Target"): 5,
+            "Most to Do": 50,
+            "Good to Do": 30,
+            "Nice to Do": 15,
+            "Saving Target": 5,
         },
-        "categories": {category: _("Unclassified") for category in EXPENSE_CATEGORIES},
+        "categories": {category: "Unclassified" for category in ["Food", "Transport", "Rent", "Clothes", "Restaurants", "Travel & picnic", "Utilities", "Others"]},
         "language": "en",  # Default language
     }
 
@@ -37,6 +37,10 @@ def load_settings():
             return loaded_settings
     else:
         return default_settings
+
+def save_settings(settings):
+    with open(SETTINGS_FILE, "w") as file:
+        json.dump(settings, file)
 
 def show_settings(finance_data, db_file):
     st.title(_("⚙️ Settings"))
@@ -52,27 +56,27 @@ def show_settings(finance_data, db_file):
         index=0 if settings["language"] == "en" else 1,
         format_func=lambda lang: _("English") if lang == "en" else _("Kurdish")
     )
-    
+
     if language != settings["language"]:
         # Save the new language setting
         settings["language"] = language
         save_settings(settings)
-        
+
         # Apply the new language
         set_language(language)
-        
+
         # Notify Streamlit to rerun the app after the setting is updated
         st.success(_("Language changed successfully. Reloading..."))
         st.experimental_rerun()
 
     # Display grade percentage allocation
     st.subheader(_("🚦 Grade Percentage Allocation"))
-    for grade in settings["grades"]:
-        settings["grades"][grade] = st.slider(
-            f"{grade} {_('Percentage')}",
+    for grade_key, grade_value in settings["grades"].items():
+        settings["grades"][grade_key] = st.slider(
+            f"{_(grade_key)} {_('Percentage')}",
             min_value=0,
             max_value=100,
-            value=settings["grades"][grade],
+            value=grade_value,
             step=1,
         )
 
@@ -94,5 +98,8 @@ def show_settings(finance_data, db_file):
 
     # Save button
     if st.button(_("Save Settings")):
-        save_settings(settings)
-        st.success(_("Settings saved successfully!"))
+        try:
+            save_settings(settings)
+            st.success(_("Settings saved successfully!"))
+        except Exception as e:
+            st.error(f"Error saving settings: {e}")
