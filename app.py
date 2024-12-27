@@ -11,6 +11,22 @@ from debts import show_debt_page  # For debt management
 from sidebar import show_sidebar  # Updated sidebar function
 from localization import set_language
 
+if "language" not in st.session_state:
+    st.session_state.language = "en"
+set_language(st.session_state.language)
+
+# Sidebar navigation
+st.sidebar.title(_("Navigation"))
+page = st.sidebar.radio(
+    _("Choose a section:"),
+    [_("Overview"), _("Settings")]
+)
+
+if page == _("Overview"):
+    show_overview(st.session_state["finance_data"])
+elif page == _("Settings"):
+    show_settings()
+    
 # File paths
 DB_FILE = "finance_data.csv"
 DEBT_FILE = "debt_data.csv"
