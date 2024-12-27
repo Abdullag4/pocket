@@ -38,13 +38,9 @@ def load_settings():
     else:
         return default_settings
 
-def save_settings(settings):
-    with open(SETTINGS_FILE, "w") as file:
-        json.dump(settings, file)
-
 def show_settings(finance_data, db_file):
     st.title(_("⚙️ Settings"))
-    
+
     # Load current settings
     settings = load_settings()
 
@@ -56,10 +52,18 @@ def show_settings(finance_data, db_file):
         index=0 if settings["language"] == "en" else 1,
         format_func=lambda lang: _("English") if lang == "en" else _("Kurdish")
     )
+    
     if language != settings["language"]:
+        # Save the new language setting
         settings["language"] = language
+        save_settings(settings)
+        
+        # Apply the new language
         set_language(language)
-        st.experimental_rerun()  # Restart the app to apply changes
+        
+        # Notify Streamlit to rerun the app after the setting is updated
+        st.success(_("Language changed successfully. Reloading..."))
+        st.experimental_rerun()
 
     # Display grade percentage allocation
     st.subheader(_("🚦 Grade Percentage Allocation"))
