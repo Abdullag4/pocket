@@ -3,7 +3,7 @@ import pandas as pd
 from expense import show_add_expense
 from income import show_add_income
 from overview import show_overview
-from settings import show_settings
+from settings import show_settings, load_settings
 from analyze import show_analysis
 from theme import configure_theme  # Global Theme Configuration
 from manage_data import show_manage_data  # For managing data
