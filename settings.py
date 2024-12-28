@@ -12,7 +12,7 @@ EXPENSE_CATEGORIES = [
     _("Restaurants"),
     _("Travel & picnic"),
     _("Utilities"),
-    _("Others")
+    _("Others"),
 ]
 
 def load_settings():
@@ -23,7 +23,7 @@ def load_settings():
             "Nice to Do": 15,
             "Saving Target": 5,
         },
-        "categories": {category: "Unclassified" for category in ["Food", "Transport", "Rent", "Clothes", "Restaurants", "Travel & picnic", "Utilities", "Others"]},
+        "categories": {category: "Unclassified" for category in EXPENSE_CATEGORIES},
         "language": "en",  # Default language
     }
 
@@ -65,15 +65,14 @@ def show_settings(finance_data, db_file):
         # Apply the new language
         set_language(language)
 
-        # Trigger a Streamlit rerun using a success message
-        st.set_query_params(language_changed="true")
+        # Use session state to track language change
+        st.session_state["language_changed"] = True
 
-    # Check query parameters for language change
-    query_params = st.query_params
-    if query_params.get("language_changed"):
+    # Handle app reload notification
+    if st.session_state.get("language_changed", False):
         st.success(_("Language changed successfully. Reloading..."))
-        st.set_query_params(**{})  # Clear the query parameter
-        return  # Exit to allow the app to rerun cleanly
+        st.session_state["language_changed"] = False
+        st.experimental_rerun()
 
     # Display grade percentage allocation
     st.subheader(_("🚦 Grade Percentage Allocation"))
