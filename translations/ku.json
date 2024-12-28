@@ -1,12 +1,10 @@
-
 {
-    "overview": "تایبەتمەندیەکان",
-    "all_transactions": "هەموو مامەڵەکان",
-    "no_data": "هیچ زانیاریەک ناوەڕۆکە بەردەست نیە.",
-    "total_income": "هەموو داهاتەکان",
-    "total_expenses": "هەموو خەرجەکان",
-    "net_balance": "شوێنی خۆراك",
-    "financial_summary": "پوختەی پارەیی",
-    "saving_target_warning": "ئاگاداری: ئەو پارەیەی پاشماوە، لە ئامانجەکان نەگەیشتووە.",
-    "success_message": "سەرکەوتوو بووی بە پارە خەزن کردن!"
+    "Welcome to the Finance App": "بەخێربێن بۆ بەرنامەی دارایی",
+    "Navigation": "ڕێنیشاندن",
+    "Go to": "بڕۆ بۆ",
+    "Home": "ماڵەوە",
+    "Settings": "رێکخستنەکان",
+    "Language changed successfully. Reloading...": "زمان بە سەرکەوتوویی گۆڕا. هەنووکە دووبارە بار دەکرێت...",
+    "Save Settings": "پاشەکەوتکردنی رێکخستنەکان",
+    "Settings saved successfully!": "رێکخستنەکان بە سەرکەوتوویی پاشەکەوتکران!"
 }
