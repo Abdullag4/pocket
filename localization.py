@@ -2,6 +2,7 @@ import json
 import os
 
 CURRENT_LANGUAGE = "en"
+TRANSLATIONS = {}  # Default empty dictionary
 
 def load_translations(language):
     file_path = f"translations/{language}.json"
@@ -17,7 +18,7 @@ def set_language(language):
     TRANSLATIONS = load_translations(language)
 
 def _(text):
-    return TRANSLATIONS.get(text, text)
+    return TRANSLATIONS.get(text, text) if TRANSLATIONS else text
 
 # Default to English
 TRANSLATIONS = load_translations(CURRENT_LANGUAGE)
