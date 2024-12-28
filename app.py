@@ -3,7 +3,7 @@ import pandas as pd
 from expense import show_add_expense
 from income import show_add_income
 from overview import show_overview
-from settings import show_settings
+from settings import show_settings, load_settings  # Import load_settings
 from analyze import show_analysis
 from theme import configure_theme  # Global Theme Configuration
 from manage_data import show_manage_data  # For managing data
@@ -34,10 +34,11 @@ if "debt_data" not in st.session_state:
 # Apply global theme configuration
 configure_theme()
 
-# Language selection
+# Load settings and language
+settings = load_settings()  # Load settings from file
 if "language" not in st.session_state:
-    st.session_state["language"] = "en"  # Default to English
-set_language(st.session_state["language"])  # Ensure correct translations are loaded
+    st.session_state["language"] = settings["language"]  # Set language from settings
+set_language(st.session_state["language"])  # Apply the selected language
 
 # Sidebar navigation with financial summary
 page = show_sidebar(st.session_state["finance_data"])  # Pass finance_data to the sidebar function
