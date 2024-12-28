@@ -30,7 +30,6 @@ def load_settings():
     if os.path.exists(SETTINGS_FILE):
         with open(SETTINGS_FILE, "r") as file:
             loaded_settings = json.load(file)
-            # Ensure default keys exist in loaded settings
             for key, value in default_settings.items():
                 if key not in loaded_settings:
                     loaded_settings[key] = value
@@ -54,24 +53,22 @@ def show_settings(finance_data, db_file):
         _("Select Application Language"),
         options=["en", "ku"],
         index=0 if settings["language"] == "en" else 1,
-        format_func=lambda lang: _("English") if lang == "en" else _("Kurdish")
+        format_func=lambda lang: _("English") if lang == "en" else _("Kurdish"),
+        key="language_option",  # Use session state key to avoid rerun issues
     )
 
     if language != settings["language"]:
-        # Save the new language setting
         settings["language"] = language
         save_settings(settings)
-
-        # Apply the new language
         set_language(language)
 
-        # Use session state to track language change
-        st.session_state["language_changed"] = True
+        # Signal a reload by setting a specific key in session state
+        st.session_state["reload_required"] = True
 
-    # Handle app reload notification
-    if st.session_state.get("language_changed", False):
+    if st.session_state.get("reload_required", False):
+        # Clear the reload signal to avoid infinite reruns
+        st.session_state["reload_required"] = False
         st.success(_("Language changed successfully. Reloading..."))
-        st.session_state["language_changed"] = False
         st.experimental_rerun()
 
     # Display grade percentage allocation
