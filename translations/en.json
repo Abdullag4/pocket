@@ -1,12 +1,10 @@
-
 {
-    "overview": "Overview",
-    "all_transactions": "All Transactions",
-    "no_data": "No data available. Start adding expenses and incomes.",
-    "total_income": "Total Income",
-    "total_expenses": "Total Expenses",
-    "net_balance": "Net Balance",
-    "financial_summary": "Financial Summary",
-    "saving_target_warning": "Warning: You have not met your saving target.",
-    "success_message": "Great! You've saved enough!"
+    "Welcome to the Finance App": "Welcome to the Finance App",
+    "Navigation": "Navigation",
+    "Go to": "Go to",
+    "Home": "Home",
+    "Settings": "Settings",
+    "Language changed successfully. Reloading...": "Language changed successfully. Reloading...",
+    "Save Settings": "Save Settings",
+    "Settings saved successfully!": "Settings saved successfully!"
 }
