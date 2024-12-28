@@ -14,7 +14,6 @@ EXPENSE_CATEGORIES = [
     _("Utilities"),
     _("Others"),
 ]
-print(f"Expense categories: {EXPENSE_CATEGORIES}")  # Debug output
 
 def load_settings():
     """Load application settings from the settings file."""
@@ -82,47 +81,51 @@ def show_settings(finance_data, db_file):
         # Normalize percentages to 100% (optional)
         total_percentage = sum(settings["grades"].values())
         if total_percentage != 100:
-            st.warning(_("The total percentage is {total_percentage}%. Adjust to make it exactly 100%.").format(total_percentage=total_percentage))
+            st.warning(
+                _("The total percentage is {total_percentage}%. Adjust to make it exactly 100%.")
+                .format(total_percentage=total_percentage)
+            )
 
-       # Display and edit expense category classifications
-st.subheader(_("🗂️ Classify Expense Categories"))
+        # Display and edit expense category classifications
+        st.subheader(_("🗂️ Classify Expense Categories"))
 
-# Translation map for grade categories
-grade_translation_map = {
-    "Most to Do": _("Most to Do"),
-    "Good to Do": _("Good to Do"),
-    "Nice to Do": _("Nice to Do"),
-    "Saving Target": _("Saving Target"),
-    "Unclassified": _("Unclassified"),
-}
+        # Translation map for grade categories
+        grade_translation_map = {
+            "Most to Do": _("Most to Do"),
+            "Good to Do": _("Good to Do"),
+            "Nice to Do": _("Nice to Do"),
+            "Saving Target": _("Saving Target"),
+            "Unclassified": _("Unclassified"),
+        }
 
-# Reverse translation map for mapping localized values back to English
-reverse_grade_translation_map = {v: k for k, v in grade_translation_map.items()}
+        # Reverse translation map for mapping localized values back to English
+        reverse_grade_translation_map = {v: k for k, v in grade_translation_map.items()}
 
-for category in EXPENSE_CATEGORIES:
-    # Get current classification for the category in English
-    current_classification = settings["categories"].get(category, "Unclassified")
-    
-    # Translate the current classification to the active language
-    translated_classification = grade_translation_map.get(current_classification, _("Unclassified"))
+        for category in EXPENSE_CATEGORIES:
+            # Get current classification for the category in English
+            current_classification = settings["categories"].get(category, "Unclassified")
 
-    # Display a dropdown to classify the category
-    selected_classification = st.selectbox(
-        _("Classify {category}").format(category=category),
-        options=list(grade_translation_map.values()),  # Localized options
-        index=list(grade_translation_map.values()).index(translated_classification),
-    )
-    
-    # Store the selected classification back in English
-    settings["categories"][category] = reverse_grade_translation_map[selected_classification]
-    
- # Save button
+            # Translate the current classification to the active language
+            translated_classification = grade_translation_map.get(current_classification, _("Unclassified"))
+
+            # Display a dropdown to classify the category
+            selected_classification = st.selectbox(
+                _("Classify {category}").format(category=category),
+                options=list(grade_translation_map.values()),  # Localized options
+                index=list(grade_translation_map.values()).index(translated_classification),
+            )
+
+            # Store the selected classification back in English
+            settings["categories"][category] = reverse_grade_translation_map[selected_classification]
+
+        # Save button
         if st.button(_("Save Settings")):
             try:
                 save_settings(settings)
                 st.success(_("Settings saved successfully!"))
             except Exception as e:
-                st.error(f"Error saving settings: {e}")
+                st.error(_("Error saving settings: {error}").format(error=str(e)))
+
     except FileNotFoundError as e:
         st.error(_("Error: Missing translation file or invalid path. Details: {error}").format(error=str(e)))
     except Exception as e:
