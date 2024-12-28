@@ -62,15 +62,28 @@ def show_settings(finance_data, db_file):
         save_settings(settings)
         set_language(language)
 
-        # Signal a reload by setting a specific key in session state
+        # Reset expense categories with the new language
+        global EXPENSE_CATEGORIES
+        EXPENSE_CATEGORIES = [
+            _("Food"),
+            _("Transport"),
+            _("Rent"),
+            _("Clothes"),
+            _("Restaurants"),
+            _("Travel & picnic"),
+            _("Utilities"),
+            _("Others"),
+        ]
+
+        # Trigger app reload
         st.session_state["reload_required"] = True
 
     if st.session_state.get("reload_required", False):
-        # Clear the reload signal to avoid infinite reruns
         st.session_state["reload_required"] = False
         st.success(_("Language changed successfully. Reloading..."))
         st.experimental_rerun()
 
+    # Remaining settings code stays the same...
     # Display grade percentage allocation
     st.subheader(_("🚦 Grade Percentage Allocation"))
     for grade_key, grade_value in settings["grades"].items():
