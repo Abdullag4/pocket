@@ -38,8 +38,8 @@ configure_theme()
 
 # Language selection
 if "language" not in st.session_state:
-    st.session_state["language"] = "en"
-set_language(st.session_state["language"])
+    st.session_state["language"] = "en"  # Default to English
+set_language(st.session_state["language"])  # Ensure correct translations are loaded
 
 # Sidebar navigation with financial summary
 page = show_sidebar(st.session_state["finance_data"])  # Pass finance_data to the sidebar function
