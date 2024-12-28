@@ -44,59 +44,64 @@ def save_settings(settings):
         json.dump(settings, file)
 
 def show_settings(finance_data, db_file):
-    """Display the settings page."""
-    st.title(_("⚙️ Settings"))
+    """Display the settings page with proper error handling."""
+    try:
+        st.title(_("⚙️ Settings"))
 
-    # Load current settings
-    settings = load_settings()
+        # Load current settings
+        settings = load_settings()
 
-    # Language Settings
-    st.subheader(_("🌐 Language Settings"))
-    language = st.radio(
-        _("Select Application Language"),
-        options=["en", "ku"],
-        index=0 if settings["language"] == "en" else 1,
-        format_func=lambda lang: _("English") if lang == "en" else _("Kurdish"),
-    )
-
-    if language != settings["language"]:
-        settings["language"] = language  # Update the language in settings
-        save_settings(settings)  # Save the updated settings to file
-        set_language(language)  # Apply the new language
-
-        st.success(_("Language changed successfully. Please refresh the page."))
-
-    # Display grade percentage allocation
-    st.subheader(_("🚦 Grade Percentage Allocation"))
-    for grade_key, grade_value in settings["grades"].items():
-        settings["grades"][grade_key] = st.slider(
-            f"{_(grade_key)} {_('Percentage')}",
-            min_value=0,
-            max_value=100,
-            value=grade_value,
-            step=1,
+        # Language Settings
+        st.subheader(_("🌐 Language Settings"))
+        language = st.radio(
+            _("Select Application Language"),
+            options=["en", "ku"],
+            index=0 if settings["language"] == "en" else 1,
+            format_func=lambda lang: _("English") if lang == "en" else _("Kurdish"),
         )
 
-    # Normalize percentages to 100% (optional)
-    total_percentage = sum(settings["grades"].values())
-    if total_percentage != 100:
-        st.warning(_("The total percentage is {total_percentage}%. Adjust to make it exactly 100%.").format(total_percentage=total_percentage))
+        if language != settings["language"]:
+            settings["language"] = language  # Update the language in settings
+            save_settings(settings)  # Save the updated settings to file
+            set_language(language)  # Apply the new language
 
-    # Display and edit expense category classifications
-    st.subheader(_("🗂️ Classify Expense Categories"))
-    for category in EXPENSE_CATEGORIES:
-        settings["categories"][category] = st.selectbox(
-            _("Classify {category}").format(category=category),
-            options=[_("Most to Do"), _("Good to Do"), _("Nice to Do"), _("Saving Target"), _("Unclassified")],
-            index=[
-                _("Most to Do"), _("Good to Do"), _("Nice to Do"), _("Saving Target"), _("Unclassified")
-            ].index(settings["categories"].get(category, _("Unclassified")))
-        )
+            st.success(_("Language changed successfully. Please refresh the page."))
 
-    # Save button
-    if st.button(_("Save Settings")):
-        try:
-            save_settings(settings)
-            st.success(_("Settings saved successfully!"))
-        except Exception as e:
-            st.error(f"Error saving settings: {e}")
+        # Display grade percentage allocation
+        st.subheader(_("🚦 Grade Percentage Allocation"))
+        for grade_key, grade_value in settings["grades"].items():
+            settings["grades"][grade_key] = st.slider(
+                f"{_(grade_key)} {_('Percentage')}",
+                min_value=0,
+                max_value=100,
+                value=grade_value,
+                step=1,
+            )
+
+        # Normalize percentages to 100% (optional)
+        total_percentage = sum(settings["grades"].values())
+        if total_percentage != 100:
+            st.warning(_("The total percentage is {total_percentage}%. Adjust to make it exactly 100%.").format(total_percentage=total_percentage))
+
+        # Display and edit expense category classifications
+        st.subheader(_("🗂️ Classify Expense Categories"))
+        for category in EXPENSE_CATEGORIES:
+            settings["categories"][category] = st.selectbox(
+                _("Classify {category}").format(category=category),
+                options=[_("Most to Do"), _("Good to Do"), _("Nice to Do"), _("Saving Target"), _("Unclassified")],
+                index=[
+                    _("Most to Do"), _("Good to Do"), _("Nice to Do"), _("Saving Target"), _("Unclassified")
+                ].index(settings["categories"].get(category, _("Unclassified")))
+            )
+
+        # Save button
+        if st.button(_("Save Settings")):
+            try:
+                save_settings(settings)
+                st.success(_("Settings saved successfully!"))
+            except Exception as e:
+                st.error(f"Error saving settings: {e}")
+    except FileNotFoundError as e:
+        st.error(_("Error: Missing translation file or invalid path. Details: {error}").format(error=str(e)))
+    except Exception as e:
+        st.error(_("An unexpected error occurred: {error}").format(error=str(e)))
