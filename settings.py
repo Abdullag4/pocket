@@ -16,6 +16,7 @@ EXPENSE_CATEGORIES = [
 ]
 
 def load_settings():
+    """Load application settings from the settings file."""
     default_settings = {
         "grades": {
             "Most to Do": 50,
@@ -23,7 +24,7 @@ def load_settings():
             "Nice to Do": 15,
             "Saving Target": 5,
         },
-        "categories": {category: _("Unclassified") for category in EXPENSE_CATEGORIES},
+        "categories": {category: "Unclassified" for category in EXPENSE_CATEGORIES},
         "language": "en",  # Default language
     }
 
@@ -38,27 +39,16 @@ def load_settings():
         return default_settings
 
 def save_settings(settings):
+    """Save application settings to the settings file."""
     with open(SETTINGS_FILE, "w") as file:
         json.dump(settings, file)
 
 def show_settings(finance_data, db_file):
+    """Display the settings page."""
     st.title(_("⚙️ Settings"))
 
     # Load current settings
     settings = load_settings()
-
-    # Ensure expense categories are updated dynamically
-    global EXPENSE_CATEGORIES
-    EXPENSE_CATEGORIES = [
-        _("Food"),
-        _("Transport"),
-        _("Rent"),
-        _("Clothes"),
-        _("Restaurants"),
-        _("Travel & picnic"),
-        _("Utilities"),
-        _("Others"),
-    ]
 
     # Language Settings
     st.subheader(_("🌐 Language Settings"))
@@ -67,22 +57,14 @@ def show_settings(finance_data, db_file):
         options=["en", "ku"],
         index=0 if settings["language"] == "en" else 1,
         format_func=lambda lang: _("English") if lang == "en" else _("Kurdish"),
-        key="language_option",
     )
 
     if language != settings["language"]:
-        settings["language"] = language
-        save_settings(settings)
-        set_language(language)
+        settings["language"] = language  # Update the language in settings
+        save_settings(settings)  # Save the updated settings to file
+        set_language(language)  # Apply the new language
 
-        # Indicate that the app should reload
-        st.session_state["reload_required"] = True
-
-    # Handle reload logic
-    if st.session_state.get("reload_required", False):
-        st.session_state["reload_required"] = False
         st.success(_("Language changed successfully. Please refresh the page."))
-        return  # Exit the function to prevent further execution
 
     # Display grade percentage allocation
     st.subheader(_("🚦 Grade Percentage Allocation"))
@@ -98,11 +80,7 @@ def show_settings(finance_data, db_file):
     # Normalize percentages to 100% (optional)
     total_percentage = sum(settings["grades"].values())
     if total_percentage != 100:
-        st.warning(
-            _("The total percentage is {total_percentage}%. Adjust to make it exactly 100%.").format(
-                total_percentage=total_percentage
-            )
-        )
+        st.warning(_("The total percentage is {total_percentage}%. Adjust to make it exactly 100%.").format(total_percentage=total_percentage))
 
     # Display and edit expense category classifications
     st.subheader(_("🗂️ Classify Expense Categories"))
@@ -111,12 +89,8 @@ def show_settings(finance_data, db_file):
             _("Classify {category}").format(category=category),
             options=[_("Most to Do"), _("Good to Do"), _("Nice to Do"), _("Saving Target"), _("Unclassified")],
             index=[
-                _("Most to Do"),
-                _("Good to Do"),
-                _("Nice to Do"),
-                _("Saving Target"),
-                _("Unclassified"),
-            ].index(settings["categories"].get(category, _("Unclassified"))),
+                _("Most to Do"), _("Good to Do"), _("Nice to Do"), _("Saving Target"), _("Unclassified")
+            ].index(settings["categories"].get(category, _("Unclassified")))
         )
 
     # Save button
