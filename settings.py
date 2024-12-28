@@ -74,12 +74,15 @@ def show_settings(finance_data, db_file):
         settings["language"] = language
         save_settings(settings)
         set_language(language)
+
+        # Indicate that the app should reload
         st.session_state["reload_required"] = True
 
+    # Handle reload logic
     if st.session_state.get("reload_required", False):
         st.session_state["reload_required"] = False
-        st.success(_("Language changed successfully. Reloading..."))
-        st.experimental_rerun()
+        st.success(_("Language changed successfully. Please refresh the page."))
+        return  # Exit the function to prevent further execution
 
     # Display grade percentage allocation
     st.subheader(_("🚦 Grade Percentage Allocation"))
