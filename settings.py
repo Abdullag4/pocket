@@ -115,3 +115,15 @@ for category in EXPENSE_CATEGORIES:
     
     # Store the selected classification back in English
     settings["categories"][category] = reverse_grade_translation_map[selected_classification]
+    
+ # Save button
+        if st.button(_("Save Settings")):
+            try:
+                save_settings(settings)
+                st.success(_("Settings saved successfully!"))
+            except Exception as e:
+                st.error(f"Error saving settings: {e}")
+    except FileNotFoundError as e:
+        st.error(_("Error: Missing translation file or invalid path. Details: {error}").format(error=str(e)))
+    except Exception as e:
+        st.error(_("An unexpected error occurred: {error}").format(error=str(e)))
