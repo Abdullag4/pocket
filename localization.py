@@ -1,75 +1,23 @@
-import streamlit as st
+import json
+import os
 
-translations = {
-    "en": {
-        "Overview": "Overview",
-        "Add Expense": "Add Expense",
-        "Add Income": "Add Income",
-        "Analyze": "Analyze",
-        "Manage Data": "Manage Data",
-        "Settings": "Settings",
-        "Debt Management": "Debt Management",
-        "Food": "Food",
-        "Transport": "Transport",
-        "Rent": "Rent",
-        "Clothes": "Clothes",
-        "Restaurants": "Restaurants",
-        "Travel & picnic": "Travel & picnic",
-        "Utilities": "Utilities",
-        "Others": "Others",
-        "Most to Do": "Most to Do",
-        "Good to Do": "Good to Do",
-        "Nice to Do": "Nice to Do",
-        "Saving Target": "Saving Target",
-        "Unclassified": "Unclassified",
-        "Settings saved successfully!": "Settings saved successfully!",
-        "⚙️ Settings": "⚙️ Settings",
-        "🌐 Language Settings": "🌐 Language Settings",
-        "Select Application Language": "Select Application Language",
-        "English": "English",
-        "Kurdish": "Kurdish",
-        "Percentage": "Percentage",
-        "The total percentage is {total_percentage}%. Adjust to make it exactly 100%.": "The total percentage is {total_percentage}%. Adjust to make it exactly 100%.",
-        "Classify Expense Categories": "Classify Expense Categories",
-        "Classify {category}": "Classify {category}",
-    },
-    "ku": {
-        "Overview": "کورتە",
-        "Add Expense": "زیادکردنی خەرجی",
-        "Add Income": "زیادکردنی داهات",
-        "Analyze": "ڕاپۆرتکردن",
-        "Manage Data": "بەرێوەبردنی زانیاریەکان",
-        "Settings": "رێکخستنەکان",
-        "Debt Management": "بەڕێوەبردنی قەرزەکان",
-        "Food": "خواردن",
-        "Transport": "هاتووچۆ",
-        "Rent": "کرێ",
-        "Clothes": "جل",
-        "Restaurants": "چایخانەکان",
-        "Travel & picnic": "گەشتە و چەندروو",
-        "Utilities": "کاریگەرەکان",
-        "Others": "ئەوانەی تر",
-        "Most to Do": "زۆر گرنگ",
-        "Good to Do": "باشە بەکارببە",
-        "Nice to Do": "چاکە بەکارببە",
-        "Saving Target": "ئامانجی پاشەکەوتکردن",
-        "Unclassified": "پەیوەندی نەکراوە",
-        "Settings saved successfully!": "رێکخستنەکان بە سەرکەوتوویی هەڵگیرا!",
-        "⚙️ Settings": "⚙️ رێکخستنەکان",
-        "🌐 Language Settings": "رێکخستنەکانی زمان",
-        "Select Application Language": "زمانی بەکارهێنان هەڵبژێرە",
-        "English": "ئینگلیزی",
-        "Kurdish": "کوردی",
-        "Percentage": "بەش",
-        "The total percentage is {total_percentage}%. Adjust to make it exactly 100%.": "کۆی هەڵسەنگاندنەکان {total_percentage}٪ دەکات. هەڵبژێرە بۆ بەدەست هێنانی ١٠٠٪.",
-        "Classify Expense Categories": "پۆلەکردنەوەی خەرجەکان",
-        "Classify {category}": "پۆلەکردنەوەی {category}",
-    },
-}
+CURRENT_LANGUAGE = "en"
+
+def load_translations(language):
+    file_path = f"translations/{language}.json"
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            return json.load(file)
+    else:
+        raise FileNotFoundError(f"Translation file for {language} not found.")
+
+def set_language(language):
+    global CURRENT_LANGUAGE, TRANSLATIONS
+    CURRENT_LANGUAGE = language
+    TRANSLATIONS = load_translations(language)
 
 def _(text):
-    lang = st.session_state.get("language", "en")
-    return translations.get(lang, {}).get(text, text)
+    return TRANSLATIONS.get(text, text)
 
-def set_language(lang):
-    st.session_state["language"] = lang
+# Default to English
+TRANSLATIONS = load_translations(CURRENT_LANGUAGE)
