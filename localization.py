@@ -10,7 +10,7 @@ def load_translations(language):
             return json.load(file)
     else:
         raise FileNotFoundError(f"Translation file for {language} not found.")
-
+        
 def set_language(language):
     global CURRENT_LANGUAGE, TRANSLATIONS
     CURRENT_LANGUAGE = language
