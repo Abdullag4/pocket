@@ -5,7 +5,7 @@
     "Food": "خواردن",
     "Home": "ماڵەوە",
     "Settings": "رێکخستنەکان",
-    "Language changed successfully. Reloading...": "زمان بە سەرکەوتوویی گۆڕا. هەنووکە دووبارە بار دەکرێت...",
+    "Language changed successfully. Please refresh the page.": "زمان بە سەرکەوتوویی گۆڕا. تکایە پەڕەکە نوێ بکەرەوە.",
     "Save Settings": "پاشەکەوتکردنی رێکخستنەکان",
     "Settings saved successfully!": "رێکخستنەکان بە سەرکەوتوویی پاشەکەوتکران!"
 }
