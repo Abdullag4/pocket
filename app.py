@@ -3,7 +3,7 @@ import pandas as pd
 from expense import show_add_expense
 from income import show_add_income
 from overview import show_overview
-from settings import show_settings, load_settings  # Import load_settings
+from settings import show_settings, load_settings
 from analyze import show_analysis
 from theme import configure_theme  # Global Theme Configuration
 from manage_data import show_manage_data  # For managing data
@@ -24,21 +24,23 @@ def load_data(file_path, columns):
         data.to_csv(file_path, index=False)
         return data
 
+# Load settings and apply the language
+settings = load_settings()  # Load settings from `expense_settings.json`
+if "language" not in st.session_state:
+    st.session_state["language"] = settings["language"]  # Use saved language
+set_language(st.session_state["language"])  # Apply the language
+
 # Initialize session state for data persistence
 if "finance_data" not in st.session_state:
     st.session_state["finance_data"] = load_data(DB_FILE, ["Date", "Category", "Amount", "Type", "Notes"])
 
 if "debt_data" not in st.session_state:
-    st.session_state["debt_data"] = load_data(DEBT_FILE, ["Type", "Name", "Amount", "Due Date", "Reason", "Status"])
+    st.session_state["debt_data"] = load_data(
+        DEBT_FILE, ["Type", "Name", "Amount", "Due Date", "Reason", "Status"]
+    )
 
 # Apply global theme configuration
 configure_theme()
-
-# Load settings and language
-settings = load_settings()  # Load settings from file
-if "language" not in st.session_state:
-    st.session_state["language"] = settings["language"]  # Set language from settings
-set_language(st.session_state["language"])  # Apply the selected language
 
 # Sidebar navigation with financial summary
 page = show_sidebar(st.session_state["finance_data"])  # Pass finance_data to the sidebar function
