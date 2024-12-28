@@ -84,16 +84,37 @@ def show_settings(finance_data, db_file):
         if total_percentage != 100:
             st.warning(_("The total percentage is {total_percentage}%. Adjust to make it exactly 100%.").format(total_percentage=total_percentage))
 
-        # Display and edit expense category classifications
-        st.subheader(_("🗂️ Classify Expense Categories"))
-        for category in EXPENSE_CATEGORIES:
-            settings["categories"][category] = st.selectbox(
-                _("Classify {category}").format(category=category),
-                options=[_("Most to Do"), _("Good to Do"), _("Nice to Do"), _("Saving Target"), _("Unclassified")],
-                index=[
-                    _("Most to Do"), _("Good to Do"), _("Nice to Do"), _("Saving Target"), _("Unclassified")
-                ].index(settings["categories"].get(category, _("Unclassified")))
-            )
+       # Display and edit expense category classifications
+st.subheader(_("🗂️ Classify Expense Categories"))
+
+# Translation map for grade categories
+grade_translation_map = {
+    "Most to Do": _("Most to Do"),
+    "Good to Do": _("Good to Do"),
+    "Nice to Do": _("Nice to Do"),
+    "Saving Target": _("Saving Target"),
+    "Unclassified": _("Unclassified"),
+}
+
+# Reverse translation map for mapping localized values back to English
+reverse_grade_translation_map = {v: k for k, v in grade_translation_map.items()}
+
+for category in EXPENSE_CATEGORIES:
+    # Get current classification for the category in English
+    current_classification = settings["categories"].get(category, "Unclassified")
+    
+    # Translate the current classification to the active language
+    translated_classification = grade_translation_map.get(current_classification, _("Unclassified"))
+
+    # Display a dropdown to classify the category
+    selected_classification = st.selectbox(
+        _("Classify {category}").format(category=category),
+        options=list(grade_translation_map.values()),  # Localized options
+        index=list(grade_translation_map.values()).index(translated_classification),
+    )
+    
+    # Store the selected classification back in English
+    settings["categories"][category] = reverse_grade_translation_map[selected_classification]
 
         # Save button
         if st.button(_("Save Settings")):
