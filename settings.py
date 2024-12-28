@@ -14,6 +14,7 @@ EXPENSE_CATEGORIES = [
     _("Utilities"),
     _("Others"),
 ]
+print(f"Expense categories: {EXPENSE_CATEGORIES}")  # Debug output
 
 def load_settings():
     """Load application settings from the settings file."""
