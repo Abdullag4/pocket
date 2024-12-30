@@ -3,7 +3,7 @@ from st_aggrid import AgGrid, GridOptionsBuilder
 import pandas as pd
 import json
 import os
-from localization import _
+from localization import set_language, _
 
 SETTINGS_FILE = "expense_settings.json"
 
