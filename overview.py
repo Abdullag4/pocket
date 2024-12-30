@@ -20,7 +20,7 @@ def load_settings():
                 "Nice to Do": 15,
                 "Saving Target": 5,
             },
-            "categories": {}
+            _("categories"): {}
         }
 
 def show_overview(finance_data):
