@@ -1,6 +1,12 @@
 {
   "⚙️ Settings": "⚙️ دەستكارییەكان",
-  "overview": "خستنەروو",
+  "Overview": "کورتەیەکی گشتی",
+  "Add Expense": "زیادکردنی خەرجی",
+  "Add Income": "زیادکردنی ئامادەیی",
+  "Analyze": "چاودێری",
+  "Manage Data": "بەڕێوەبردنی زانیاری",
+  "Settings": "ڕێکخستنەکان",
+  "Debt Management": "بەڕێوەبردنی قەرز"
   "🌐 Language Settings": "🌐 ڕێكخستنەكانی زمان",
   "Select Application Language": "زمانی ئەپڵیكەیشەن هەڵبژێرە",
   "Language changed successfully. Please refresh the page.": "زمان بە سەرکەوتوویی گۆڕا. تکایە پەڕەکە نوێ بکەوە.",
