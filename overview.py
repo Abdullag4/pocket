@@ -10,8 +10,12 @@ SETTINGS_FILE = "expense_settings.json"
 # Load classification settings
 def load_settings():
     if os.path.exists(SETTINGS_FILE):
-        with open(SETTINGS_FILE, "r") as file:
-            return json.load(file)
+        try:
+            with open(SETTINGS_FILE, "r") as file:
+                return json.load(file)
+        except json.JSONDecodeError:
+            st.error(_("Error: Unable to load settings. Invalid JSON format in settings file."))
+            return {}
     else:
         return {
             "grades": {
@@ -24,44 +28,51 @@ def load_settings():
         }
 
 def show_overview(finance_data):
-    # Debug the translation
+    # Safe fallback for translation
     overview_translation = _("Overview")
-    overview_text = overview_translation if overview_translation else "Overview"  # Safe fallback
+    overview_text = overview_translation if overview_translation else "Overview"
 
-    st.write(f"Translated Overview: {overview_text}")  # Debugging
     st.markdown(f'<div class="section-title">{overview_text}</div>', unsafe_allow_html=True)
 
     if finance_data.empty:
         st.info(_("No data available. Start adding expenses and incomes."))
-    else:
-        # Rest of the code...
-        st.subheader(_("💹 Financial Summary"))
+        return
 
-        
-        grid_options = GridOptionsBuilder.from_dataframe(finance_data)
-        grid_options.configure_pagination(paginationAutoPageSize=True)
-        grid_options.configure_default_column(wrapText=True, autoHeight=True)
-        grid_options.configure_column("Amount", type=["numericColumn"], precision=2)
-        grid_options.configure_column("Date", type=["dateColumn", "customDateTimeFormat"], custom_format_string="yyyy-MM-dd")
-        AgGrid(finance_data, gridOptions=grid_options.build(), height=400)
+    # Ensure the Date column is properly formatted
+    if "Date" in finance_data.columns:
+        finance_data["Date"] = pd.to_datetime(finance_data["Date"], errors="coerce")
 
+    st.subheader(_("💹 Financial Summary"))
+    
+    # Use AgGrid for transactions
+    grid_options = GridOptionsBuilder.from_dataframe(finance_data)
+    grid_options.configure_pagination(paginationAutoPageSize=True)
+    grid_options.configure_default_column(wrapText=True, autoHeight=True)
+    grid_options.configure_column("Amount", type=["numericColumn"], precision=2)
+    grid_options.configure_column("Date", type=["dateColumn", "customDateTimeFormat"], custom_format_string="yyyy-MM-dd")
+    AgGrid(finance_data, gridOptions=grid_options.build(), height=400)
+
+    # Calculate Metrics
     total_income = finance_data.loc[finance_data['Type'] == "Income", "Amount"].sum()
     total_expenses = finance_data.loc[finance_data['Type'] == "Expense", "Amount"].sum()
     net_balance = total_income - total_expenses
 
-    st.subheader(_("💹 Financial Summary"))
     col1, col2, col3 = st.columns(3)
     col1.metric(label=_("💰 Total Income"), value=f"${total_income:,.2f}")
     col2.metric(label=_("💸 Total Expenses"), value=f"${total_expenses:,.2f}")
     col3.metric(label=_("📊 Net Balance"), value=f"${net_balance:,.2f}")
 
+    # Classification-based summary
     settings = load_settings()
+    if not settings:
+        return
 
     if "categories" in settings and "grades" in settings:
         st.subheader(_("📊 Expense Breakdown by Classification"))
 
         expense_data = finance_data[finance_data['Type'] == "Expense"]
         classified_expenses = {grade: 0 for grade in settings["grades"]}
+        
         for _, row in expense_data.iterrows():
             category = row.get("Category", _("Unclassified"))
             classification = settings["categories"].get(category, _("Unclassified"))
