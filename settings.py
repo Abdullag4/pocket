@@ -96,6 +96,7 @@ def show_settings(finance_data, db_file):
             "Nice to Do": _("Nice to Do"),
             "Saving Target": _("Saving Target"),
             "Unclassified": _("Unclassified"),
+            "Classify": _("Classify"),
         }
 
         # Reverse translation map for mapping localized values back to English
