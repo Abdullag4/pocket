@@ -22,6 +22,7 @@ def load_settings():
             },
             "categories": {}
         }
+
 def show_overview(finance_data):
     # Debug the translation
     overview_text = _("Overview") or "Overview"  # Fallback for missing translation
@@ -35,18 +36,6 @@ def show_overview(finance_data):
     else:
         # Rest of the code...
         st.subheader(_("💹 Financial Summary"))
-
-
-def show_overview(finance_data):
-    st.markdown(f'<div class="section-title">{_("Overview")}</div>', unsafe_allow_html=True)
-
-    if finance_data.empty:
-        st.info(_("No data available. Start adding expenses and incomes."))
-    else:
-        if "Date" in finance_data.columns:
-            finance_data["Date"] = pd.to_datetime(finance_data["Date"], errors="coerce")
-
-        st.subheader(_("📋 All Transactions"))
         
         grid_options = GridOptionsBuilder.from_dataframe(finance_data)
         grid_options.configure_pagination(paginationAutoPageSize=True)
