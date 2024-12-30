@@ -25,10 +25,10 @@ def load_settings():
 
 def show_overview(finance_data):
     # Debug the translation
-    overview_text = _("Overview") or "Overview"  # Fallback for missing translation
-    st.write(f"Translated Overview: {overview_text}")  # Debugging
+    overview_translation = _("Overview")
+    overview_text = overview_translation if overview_translation else "Overview"  # Safe fallback
 
-    # Use the translation safely
+    st.write(f"Translated Overview: {overview_text}")  # Debugging
     st.markdown(f'<div class="section-title">{overview_text}</div>', unsafe_allow_html=True)
 
     if finance_data.empty:
@@ -36,6 +36,7 @@ def show_overview(finance_data):
     else:
         # Rest of the code...
         st.subheader(_("💹 Financial Summary"))
+
         
         grid_options = GridOptionsBuilder.from_dataframe(finance_data)
         grid_options.configure_pagination(paginationAutoPageSize=True)
