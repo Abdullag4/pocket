@@ -11,18 +11,23 @@ def load_translations(language):
             with open(file_path, "r") as file:
                 return json.load(file)
         except json.JSONDecodeError:
-            raise ValueError(f"Invalid JSON format in {file_path}")
+            print(f"Error: Invalid JSON format in {file_path}.")
+            return {}
     else:
-        raise FileNotFoundError(f"Translation file for {language} not found.")
-        
+        print(f"Error: Translation file for '{language}' not found. Falling back to default.")
+        return {}
+
 def set_language(language):
     global CURRENT_LANGUAGE, TRANSLATIONS
     CURRENT_LANGUAGE = language
     TRANSLATIONS = load_translations(language)
-    print(f"Loaded translations for {language}: {TRANSLATIONS}")  # Debug statement
+    if TRANSLATIONS:
+        print(f"Loaded translations for '{language}'.")
+    else:
+        print(f"Warning: No translations found for '{language}'. Using default texts.")
 
 def _(text):
-    return TRANSLATIONS.get(text, text) if TRANSLATIONS else text
+    return TRANSLATIONS.get(text, text)  # Return the translation or the original text if not found
 
-# Default to English
+# Default to English at startup
 TRANSLATIONS = load_translations(CURRENT_LANGUAGE)
