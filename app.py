@@ -5,16 +5,21 @@ from income import show_add_income
 from overview import show_overview
 from settings import show_settings, load_settings
 from analyze import show_analysis
-from theme import configure_theme  # Global Theme Configuration
-from manage_data import show_manage_data  # For managing data
-from debts import show_debt_page  # For debt management
-from sidebar import show_sidebar  # Updated sidebar function
-from localization import set_language, _  # Localization
+from theme import configure_theme
+from manage_data import show_manage_data
+from debts import show_debt_page
+from sidebar import show_sidebar
+from localization import set_language, _
 
+# Load settings
+settings = load_settings()
+
+# Initialize language from settings or default
 if "language" not in st.session_state:
-    st.session_state["language"] = "en"  # Default language
+    st.session_state["language"] = settings.get("language", "en")
 
-set_language(st.session_state["language"])  # Load translations
+# Apply language
+set_language(st.session_state["language"])
 
 # File paths
 DB_FILE = "finance_data.csv"
@@ -29,20 +34,12 @@ def load_data(file_path, columns):
         data.to_csv(file_path, index=False)
         return data
 
-# Load settings and apply the language
-settings = load_settings()  # Load settings from `expense_settings.json`
-if "language" not in st.session_state:
-    st.session_state["language"] = settings["language"]  # Use saved language
-set_language(st.session_state["language"])  # Apply the language
-
 # Initialize session state for data persistence
 if "finance_data" not in st.session_state:
     st.session_state["finance_data"] = load_data(DB_FILE, ["Date", "Category", "Amount", "Type", "Notes"])
 
 if "debt_data" not in st.session_state:
-    st.session_state["debt_data"] = load_data(
-        DEBT_FILE, ["Type", "Name", "Amount", "Due Date", "Reason", "Status"]
-    )
+    st.session_state["debt_data"] = load_data(DEBT_FILE, ["Type", "Name", "Amount", "Due Date", "Reason", "Status"])
 
 # Apply global theme configuration
 configure_theme()
