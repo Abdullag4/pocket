@@ -14,24 +14,24 @@ def load_settings():
     else:
         # Default fallback settings if file doesn't exist
         return {
-            "grades": {
-                "Most to Do": 50,
-                "Good to Do": 30,
-                "Nice to Do": 15,
-                "Saving Target": 5,
+            _("grades"): {
+                _(("Most to Do"): 50,
+                _("Good to Do"): 30,
+                _("Nice to Do"): 15,
+                _("Saving Target"): 5,
             },
-            "categories": {}
+            _("categories"): {}
         }
 
 def show_overview(finance_data):
     st.markdown('<div class="section-title">Overview</div>', unsafe_allow_html=True)
 
     if finance_data.empty:
-        st.info("No data available. Start adding expenses and incomes.")
+        st.info_(("No data available. Start adding expenses and incomes."))
     else:
         # Ensure the Date column is properly formatted
-        if "Date" in finance_data.columns:
-            finance_data["Date"] = pd.to_datetime(finance_data["Date"], errors="coerce")
+        if _("Date") in finance_data.columns:
+            finance_data[_("Date")] = pd.to_datetime(finance_data[_("Date")], errors="coerce")
 
         st.subheader("📋 All Transactions")
         
@@ -44,12 +44,12 @@ def show_overview(finance_data):
         AgGrid(finance_data, gridOptions=grid_options.build(), height=400)
 
     # Calculate Metrics
-    total_income = finance_data.loc[finance_data['Type'] == "Income", "Amount"].sum()
-    total_expenses = finance_data.loc[finance_data['Type'] == "Expense", "Amount"].sum()
+    total_income = finance_data.loc[finance_data['Type'] == _("Income"), _("Amount")].sum()
+    total_expenses = finance_data.loc[finance_data['Type'] == _("Expense"), _("Amount")].sum()
     net_balance = total_income - total_expenses
 
     # Display Metrics
-    st.subheader("💹 Financial Summary")
+    st.subheader(_("💹 Financial Summary"))
     col1, col2, col3 = st.columns(3)
     col1.metric(label="💰 Total Income", value=f"${total_income:,.2f}")
     col2.metric(label="💸 Total Expenses", value=f"${total_expenses:,.2f}")
