@@ -22,6 +22,20 @@ def load_settings():
             },
             "categories": {}
         }
+def show_overview(finance_data):
+    # Debug the translation
+    overview_text = _("Overview") or "Overview"  # Fallback for missing translation
+    st.write(f"Translated Overview: {overview_text}")  # Debugging
+
+    # Use the translation safely
+    st.markdown(f'<div class="section-title">{overview_text}</div>', unsafe_allow_html=True)
+
+    if finance_data.empty:
+        st.info(_("No data available. Start adding expenses and incomes."))
+    else:
+        # Rest of the code...
+        st.subheader(_("💹 Financial Summary"))
+
 
 def show_overview(finance_data):
     st.markdown(f'<div class="section-title">{_("Overview")}</div>', unsafe_allow_html=True)
