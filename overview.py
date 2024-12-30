@@ -49,7 +49,7 @@ def show_overview(finance_data):
     net_balance = total_income - total_expenses
 
     # Display Metrics
-    st.subheader("💹 Financial Summary")
+    st.subheader(_("💹 Financial Summary"))
     col1, col2, col3 = st.columns(3)
     col1.metric(label="💰 Total Income", value=f"${total_income:,.2f}")
     col2.metric(label="💸 Total Expenses", value=f"${total_expenses:,.2f}")
