@@ -47,18 +47,23 @@ configure_theme()
 # Sidebar navigation with financial summary
 page = show_sidebar(st.session_state["finance_data"])  # Pass finance_data to the sidebar function
 
-# Page routing
-if page == _("Overview"):
+# Debugging translations
+st.write(f"Current page: {page}")  # Debugging
+st.write(f"Translated Overview: {_('Overview')}")  # Debugging
+
+# Page routing with fallback for missing translations
+if page == _("Overview") or page == "Overview":  # Fallback for untranslated string
     show_overview(st.session_state["finance_data"])
-elif page == _("Add Expense"):
+elif page == _("Add Expense") or page == "Add Expense":
     st.session_state["finance_data"] = show_add_expense(st.session_state["finance_data"], DB_FILE)
-elif page == _("Add Income"):
+elif page == _("Add Income") or page == "Add Income":
     st.session_state["finance_data"] = show_add_income(st.session_state["finance_data"], DB_FILE)
-elif page == _("Analyze"):
+elif page == _("Analyze") or page == "Analyze":
     show_analysis(st.session_state["finance_data"])
-elif page == _("Manage Data"):
+elif page == _("Manage Data") or page == "Manage Data":
     show_manage_data(st.session_state["finance_data"], DB_FILE)
-elif page == _("Settings"):
+elif page == _("Settings") or page == "Settings":
     show_settings(st.session_state["finance_data"], DB_FILE)
-elif page == _("Debt Management"):
+elif page == _("Debt Management") or page == "Debt Management":
     show_debt_page(st.session_state["debt_data"], DEBT_FILE)
+
