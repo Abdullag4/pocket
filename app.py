@@ -34,6 +34,14 @@ def load_data(file_path, columns):
         data.to_csv(file_path, index=False)
         return data
 
+# Save data back to the file
+def save_data(file_path, data):
+    try:
+        data.to_csv(file_path, index=False)
+        st.success(_("Data saved successfully."))
+    except Exception as e:
+        st.error(_("Error saving data: {error}").format(error=str(e)))
+
 # Initialize session state for data persistence
 if "finance_data" not in st.session_state:
     st.session_state["finance_data"] = load_data(DB_FILE, ["Date", "Category", "Amount", "Type", "Notes"])
@@ -56,14 +64,17 @@ if page == _("Overview") or page == "Overview":  # Fallback for untranslated str
     show_overview(st.session_state["finance_data"])
 elif page == _("Add Expense") or page == "Add Expense":
     st.session_state["finance_data"] = show_add_expense(st.session_state["finance_data"], DB_FILE)
+    save_data(DB_FILE, st.session_state["finance_data"])  # Save changes
 elif page == _("Add Income") or page == "Add Income":
     st.session_state["finance_data"] = show_add_income(st.session_state["finance_data"], DB_FILE)
+    save_data(DB_FILE, st.session_state["finance_data"])  # Save changes
 elif page == _("Analyze") or page == "Analyze":
     show_analysis(st.session_state["finance_data"])
 elif page == _("Manage Data") or page == "Manage Data":
     show_manage_data(st.session_state["finance_data"], DB_FILE)
+    save_data(DB_FILE, st.session_state["finance_data"])  # Save changes
 elif page == _("Settings") or page == "Settings":
     show_settings(st.session_state["finance_data"], DB_FILE)
 elif page == _("Debt Management") or page == "Debt Management":
     show_debt_page(st.session_state["debt_data"], DEBT_FILE)
-
+    save_data(DEBT_FILE, st.session_state["debt_data"])  # Save changes
