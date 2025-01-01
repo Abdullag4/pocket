@@ -11,14 +11,14 @@ from debts import show_debt_page
 from sidebar import show_sidebar
 from localization import set_language, _
 import requests
-import base64
 import json
+import base64
 
-# GitHub configurations
+# Constants
 GITHUB_API_URL = "https://api.github.com"
-REPO = "Abdullag4/pocket"  # Your GitHub repository
-BRANCH = "main"  # Branch name
-FILE_PATH = "finance_data.csv"  # File path in GitHub
+REPO = "Abdullag4/pocket"  # Replace with your username/repository
+BRANCH = "main"  # Replace with your branch name
+FILE_PATH = "finance_data.csv"  # Path in the GitHub repository
 
 # Load settings
 settings = load_settings()
@@ -111,17 +111,17 @@ if page == _("Overview") or page == "Overview":  # Fallback for untranslated str
     show_overview(st.session_state["finance_data"])
 elif page == _("Add Expense") or page == "Add Expense":
     st.session_state["finance_data"] = show_add_expense(st.session_state["finance_data"], DB_FILE)
-    save_and_sync(DB_FILE, st.session_state["finance_data"])
+    save_and_sync(DB_FILE, st.session_state["finance_data"])  # Save changes and push to GitHub
 elif page == _("Add Income") or page == "Add Income":
     st.session_state["finance_data"] = show_add_income(st.session_state["finance_data"], DB_FILE)
-    save_and_sync(DB_FILE, st.session_state["finance_data"])
+    save_and_sync(DB_FILE, st.session_state["finance_data"])  # Save changes and push to GitHub
 elif page == _("Analyze") or page == "Analyze":
     show_analysis(st.session_state["finance_data"])
 elif page == _("Manage Data") or page == "Manage Data":
     show_manage_data(st.session_state["finance_data"], DB_FILE)
-    save_and_sync(DB_FILE, st.session_state["finance_data"])
+    save_and_sync(DB_FILE, st.session_state["finance_data"])  # Save changes and push to GitHub
 elif page == _("Settings") or page == "Settings":
     show_settings(st.session_state["finance_data"], DB_FILE)
 elif page == _("Debt Management") or page == "Debt Management":
     show_debt_page(st.session_state["debt_data"], DEBT_FILE)
-    save_and_sync(DEBT_FILE, st.session_state["debt_data"])
+    save_and_sync(DEBT_FILE, st.session_state["debt_data"])  # Save changes and push to GitHub
