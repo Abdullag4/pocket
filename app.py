@@ -10,6 +10,8 @@ from manage_data import show_manage_data
 from debts import show_debt_page
 from sidebar import show_sidebar
 from localization import set_language, _
+import requests
+import base64
 
 # Load settings
 settings = load_settings()
