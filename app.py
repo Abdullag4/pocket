@@ -14,36 +14,27 @@ import requests
 import base64
 import json
 
+# Password protection
 def authenticate():
-    # Fetch the password from secrets
-    app_password = st.secrets.get("APP_PASSWORD", None)
-    
-    if not app_password:
-        st.error("The APP_PASSWORD is not set in the secrets. Check your `.streamlit/secrets.toml` for local setup or Streamlit Cloud Secrets.")
-        st.stop()
-
-    # Authentication logic
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
 
     if not st.session_state["authenticated"]:
-        password = st.text_input("Enter the password", type="password")
-        if password == app_password:
-            st.session_state["authenticated"] = True
-            st.success("Welcome!")
-        else:
-            st.error("Incorrect password!")
-            return False
+        st.title(_("Authentication Required"))
+        password = st.text_input(_("Enter Password:"), type="password")
+        if st.button(_("Login")):
+            if password == st.secrets["APP_PASSWORD"]:  # Store the password in secrets.toml
+                st.session_state["authenticated"] = True
+                st.success(_("Authentication Successful!"))
+            else:
+                st.error(_("Invalid password. Please try again."))
+        st.stop()
 
-    return True
+# Call authentication before the main app
+authenticate()
 
-# Authenticate user
-if not authenticate():
-    st.stop()
-
-# Rest of the app
-st.write("You are logged in!")
-
+# Your main app logic here
+st.title(_("Welcome to the Finance Management App"))
 
 # Constants
 GITHUB_API_URL = "https://api.github.com"
