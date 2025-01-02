@@ -14,16 +14,15 @@ import requests
 import base64
 import json
 
-import streamlit as st
-
 def authenticate():
-    # Safely retrieve the password from secrets
+    # Fetch the password from secrets
     app_password = st.secrets.get("APP_PASSWORD", None)
+    
     if not app_password:
-        st.error("The APP_PASSWORD is not set in the secrets. Check your `secrets.toml` or Streamlit Cloud configuration.")
+        st.error("The APP_PASSWORD is not set in the secrets. Check your `.streamlit/secrets.toml` for local setup or Streamlit Cloud Secrets.")
         st.stop()
 
-    # Simple authentication mechanism
+    # Authentication logic
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
 
@@ -38,11 +37,11 @@ def authenticate():
 
     return True
 
-# Call authenticate at the start of your app
+# Authenticate user
 if not authenticate():
     st.stop()
 
-# Rest of your app code goes here
+# Rest of the app
 st.write("You are logged in!")
 
 
