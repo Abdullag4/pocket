@@ -1,6 +1,7 @@
 Date,Type,Category,Amount,Notes
-2024-12-01,Income,Salary,2000,Monthly salary
-2024-12-03,Expense,Food,150,Groceries shopping
-2024-12-05,Expense,Electric,50,Utility bill
-2024-12-07,Expense,Clothes,100,Winter jacket
-2024-12-10,Income,Investment,500,Stock dividends
+2024-12-01,Income,Salary,2000.0,Monthly salary
+2024-12-03,Expense,Food,150.0,Groceries shopping
+2024-12-05,Expense,Electric,50.0,Utility bill
+2024-12-07,Expense,Clothes,100.0,Winter jacket
+2024-12-10,Income,Investment,500.0,Stock dividends
+,Expense,Food,99.0,
