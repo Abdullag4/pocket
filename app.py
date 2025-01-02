@@ -14,11 +14,45 @@ import requests
 import json
 import base64
 
-# Constants
-GITHUB_API_URL = "https://api.github.com"
-REPO = "Abdullag4/pocket"  # Replace with your username/repository
-BRANCH = "main"  # Replace with your branch name
-FILE_PATH = "finance_data.csv"  # Path in the GitHub repository
+def push_to_github(file_path, repo, branch, token):
+    """Push local file updates to GitHub."""
+    url = f"https://api.github.com/repos/{repo}/contents/{file_path}"
+    headers = {"Authorization": f"Bearer {token}"}
+    try:
+        # Step 1: Fetch the latest file information
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            file_info = response.json()
+            sha = file_info["sha"]  # Get the latest commit SHA
+        elif response.status_code == 404:
+            sha = None  # File does not exist, creating it for the first time
+        else:
+            st.error(f"Error fetching file info: {response.json()}")
+            return
+
+        # Step 2: Read the local file content
+        with open(file_path, "rb") as f:
+            content = base64.b64encode(f.read()).decode("utf-8")
+
+        # Step 3: Prepare the payload
+        payload = {
+            "message": "Update finance_data.csv",
+            "content": content,
+            "branch": branch,
+        }
+        if sha:
+            payload["sha"] = sha  # Include SHA for updates
+
+        # Step 4: Push the updated file
+        response = requests.put(url, headers=headers, json=payload)
+        if response.status_code in [200, 201]:
+            st.success("Data successfully pushed to GitHub.")
+        else:
+            st.error(f"Error pushing data to GitHub: {response.json()}")
+
+    except Exception as e:
+        st.error(f"An error occurred: {str(e)}")
+
 
 # Load settings
 settings = load_settings()
