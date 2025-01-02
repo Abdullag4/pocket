@@ -18,11 +18,10 @@ import streamlit as st
 
 def authenticate():
     # Safely retrieve the password from secrets
-    try:
-        app_password = st.secrets["APP_PASSWORD"]
-    except KeyError:
-        st.error("The APP_PASSWORD is not set in the secrets.")
-        return False
+    app_password = st.secrets.get("APP_PASSWORD", None)
+    if not app_password:
+        st.error("The APP_PASSWORD is not set in the secrets. Check your `secrets.toml` or Streamlit Cloud configuration.")
+        st.stop()
 
     # Simple authentication mechanism
     if "authenticated" not in st.session_state:
