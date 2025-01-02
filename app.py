@@ -14,28 +14,6 @@ import requests
 import base64
 import json
 
-# Password protection
-def authenticate():
-    if "authenticated" not in st.session_state:
-        st.session_state["authenticated"] = False
-
-    if not st.session_state["authenticated"]:
-        st.title(_("Authentication Required"))
-        password = st.text_input(_("Enter Password:"), type="password")
-        if st.button(_("Login")):
-            if password == st.secrets["APP_PASSWORD"]:  # Store the password in secrets.toml
-                st.session_state["authenticated"] = True
-                st.success(_("Authentication Successful!"))
-            else:
-                st.error(_("Invalid password. Please try again."))
-        st.stop()
-
-# Call authentication before the main app
-authenticate()
-
-# Your main app logic here
-st.title(_("Welcome to the Finance Management App"))
-
 # Constants
 GITHUB_API_URL = "https://api.github.com"
 DB_FILE = "finance_data.csv"
