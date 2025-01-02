@@ -14,27 +14,37 @@ import requests
 import base64
 import json
 
-# Password protection
+import streamlit as st
+
 def authenticate():
+    # Safely retrieve the password from secrets
+    try:
+        app_password = st.secrets["APP_PASSWORD"]
+    except KeyError:
+        st.error("The APP_PASSWORD is not set in the secrets.")
+        return False
+
+    # Simple authentication mechanism
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
 
     if not st.session_state["authenticated"]:
-        st.title(_("Authentication Required"))
-        password = st.text_input(_("Enter Password:"), type="password")
-        if st.button(_("Login")):
-            if password == st.secrets["APP_PASSWORD"]:  # Store the password in secrets.toml
-                st.session_state["authenticated"] = True
-                st.success(_("Authentication Successful!"))
-            else:
-                st.error(_("Invalid password. Please try again."))
-        st.stop()
+        password = st.text_input("Enter the password", type="password")
+        if password == app_password:
+            st.session_state["authenticated"] = True
+            st.success("Welcome!")
+        else:
+            st.error("Incorrect password!")
+            return False
 
-# Call authentication before the main app
-authenticate()
+    return True
 
-# Your main app logic here
-st.title(_("Welcome to the Finance Management App"))
+# Call authenticate at the start of your app
+if not authenticate():
+    st.stop()
+
+# Rest of your app code goes here
+st.write("You are logged in!")
 
 
 # Constants
